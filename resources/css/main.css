@@ -1,0 +1,11 @@
+
+.tool-bar {
+    -fx-background-color: linear-gradient(#e5e5e5, #d0d0d0);
+}
+
+.tool-button {
+    -fx-background-color: transparent;
+}
+.tool-button:hover {
+    -fx-background-color: #f4f4f4;
+}

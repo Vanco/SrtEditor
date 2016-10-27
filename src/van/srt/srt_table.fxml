@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.cell.TextFieldTableCell?>
+
+<?import javafx.geometry.Insets?>
+<?import java.nio.charset.StandardCharsets?>
+<VBox spacing="5" xmlns:fx="http://javafx.com/fxml"
+      xmlns="http://javafx.com/javafx/8.0.112-ea" fx:controller="van.srt.SrtTableController">
+    <HBox alignment="BOTTOM_LEFT" spacing="10">
+        <padding>
+            <Insets top="5"/>
+        </padding>
+        <ChoiceBox fx:id="charset" prefWidth="100.0" onAction="#charsetChanged">
+            <value><StandardCharsets fx:constant="UTF_8"/></value>
+        </ChoiceBox>
+        <Button fx:id="btnOpenSrt" onAction="#openSrtFile" text="%button.load"/>
+        <Button fx:id="btnSaveSrt" onAction="#saveSrtFile" text="%button.save"/>
+    </HBox>
+    <Label fx:id="filename" minWidth="400" HBox.hgrow="ALWAYS"/>
+    <TableView fx:id="srtTable" editable="true" prefWidth="800.0" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn prefWidth="60" text="%table.col.id" sortable="false">
+                <cellValueFactory>
+                    <PropertyValueFactory property="id"/>
+                </cellValueFactory>
+            </TableColumn>
+            <TableColumn prefWidth="250" text="%table.col.time" sortable="false">
+                <cellValueFactory>
+                    <PropertyValueFactory property="time"/>
+                </cellValueFactory>
+                <cellFactory>
+                    <TextFieldTableCell fx:factory="forTableColumn"/>
+                </cellFactory>
+            </TableColumn>
+            <TableColumn prefWidth="500" text="%table.col.subtitle" sortable="false">
+                <cellValueFactory>
+                    <PropertyValueFactory property="sub"/>
+                </cellValueFactory>
+                <cellFactory>
+                    <TextFieldTableCell fx:factory="forTableColumn"/>
+                </cellFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+</VBox>
+
