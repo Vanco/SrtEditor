@@ -1,6 +1,6 @@
 # SrtEditor
 
-A simple subtitle (srt) editor. 
+A simple subtitle (srt) editor. See my [User Guide](/docs/user_guide) for detail.
 
 #### Feature list
 - Load two srt file side by side.

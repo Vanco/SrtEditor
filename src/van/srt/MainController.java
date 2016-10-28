@@ -111,11 +111,9 @@ public class MainController {
 
     public void about() {
         Alert alert = new Alert(Alert.AlertType.NONE);
-//        alert.getDialogPane().setBackground(new Background(new BackgroundImage(new Image("/icons/srte.png"),null,null,null,null)));
-        alert.setGraphic(new ImageView(new Image("/icons/srte-76x76.png")));
+        alert.setGraphic(new ImageView("/icons/srte-76x76.png"));
         alert.setHeaderText(resources.getString("app.name") + " " + Version.version());
         alert.setContentText("© 2016 VanStudio");
-//        alert.getDialogPane().setPrefSize(650, 440);
         alert.getButtonTypes().addAll(ButtonType.CLOSE);
         alert.show();
     }
@@ -175,7 +173,10 @@ public class MainController {
         // validate
         if (leftSrtController.srtTable.getItems().isEmpty() || rightSrtController.srtTable.getItems().isEmpty()
                 || leftSrtController.srtTable.getItems().size() != rightSrtController.srtTable.getItems().size()) {
-            new Alert(Alert.AlertType.INFORMATION, resources.getString("dialog.merge.info.both.size.do.not.match.each.other")).show();
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setHeaderText(resources.getString("dialog.merge.header.could.not.merge"));
+            alert.setContentText(resources.getString("dialog.merge.info.both.size.do.not.match.each.other"));
+            alert.show();
             return;
         }
 
@@ -224,7 +225,7 @@ public class MainController {
         dialog.setTitle(resources.getString("dialog.merge.srt.file"));
         dialog.setHeaderText(resources.getString("dialog.merge.the.two.srt.file.into.one"));
 
-        dialog.setGraphic(new ImageView(getClass().getResource("/icons/merge-76x76.png").toString()));
+        dialog.setGraphic(new ImageView("/icons/merge-76x76.png"));
 
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.NEXT, ButtonType.CANCEL);
 
@@ -319,7 +320,7 @@ public class MainController {
         GridPane.setHgrow(vBox, Priority.ALWAYS);
 
         dialog.getDialogPane().setContent(vBox);
-        dialog.getDialogPane().setPrefSize(520, 340);
+        dialog.getDialogPane().setPrefSize(560, 340);
 
         dialog.setResultConverter(btn -> {
             if (btn == ButtonType.NEXT) {
