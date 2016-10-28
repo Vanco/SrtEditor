@@ -1,6 +1,7 @@
 # User Guide
 
 ![SrtEditor](images/srte-76x76@2x.png) 
+
 SrtEditor is a sample subtitle(srt) file editor, merger. With the SrtEditor, you can 
 
 - [x] load two srt file side by side, 
@@ -76,4 +77,5 @@ Second, you need choose merge strategy.
 For my case, I choose the time from left side (English), subtitle from right side (duo lang, English and Chinese)
 the charset I choose other, GB18030. Next step, choose file name to save.
 
-Other use case is create duo lang subtitle, suppose you have two subtitle file with different language, and match the size, you can easy create a duo lang subtitle by choose combine subtitle strategy.
+Other use case is create duo lang subtitle, suppose you have two subtitle file with 
+different language, and match the size, you can easy create a duo lang subtitle by choose combine subtitle strategy.
