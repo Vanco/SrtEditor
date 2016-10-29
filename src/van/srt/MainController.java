@@ -102,9 +102,11 @@ public class MainController {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(c -> {
             if (c.equals(before)) {
-                to.addItem(selectedItem, selectedItem.getId() - 0.3f);
+                to.paste(from.getSelectedCopy(selectedItem.getId(), CopyConfig.Inset.BEFORE));
+//                to.addItem(selectedItem, selectedItem.getId() - 0.3f);
             } else {
-                to.addItem(selectedItem, selectedItem.getId() + 0.3f);
+                to.paste(from.getSelectedCopy(selectedItem.getId(), CopyConfig.Inset.AFTER));
+//                to.addItem(selectedItem, selectedItem.getId() + 0.3f);
             }
         });
     }
