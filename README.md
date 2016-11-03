@@ -1,4 +1,4 @@
-# ![icon](resources/icons/srte-96x96.png)SrtEditor
+# SrtEditor
 
 A simple subtitle (srt) editor. See my [User Guide](docs/user_guide.md) for detail.
 
