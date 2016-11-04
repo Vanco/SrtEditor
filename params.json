@@ -1,0 +1,6 @@
+{
+  "name": "Srteditor",
+  "tagline": "A simple subtitle (srt) editor",
+  "body": "# SrtEditor\r\n\r\nA simple subtitle (srt) editor. See my [User Guide](docs/user_guide.md) for detail.\r\n\r\n#### Feature list\r\n- Load two srt file side by side.\r\n- copy selected row from one side to the other side.\r\n- remove selected row, left, right or both.\r\n- merge two srt file into one file.\r\n- edit subtitle.\r\n- edit time.\r\n  \r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
