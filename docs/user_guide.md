@@ -52,11 +52,11 @@ The copy is only support copy one row a time, and the insert point in the target
  The purpose of copy action is to make the rows on both side match each other. 
  And the most important thing after copy is to adjust the time, which may be a trick work.
  
-  # | time | subtitle |&nbsp;| # | time | subtitle
- --- | --- | --- | --- |---| --- | ---
- 1.0 | ... --> a | xxxxx |&nbsp;| 1.0 | ... --> a1 | xxxxxx
- 2.0 | b --> c | xxxxx |&nbsp;| 2.0 | b1 --> c1 | xxxxxx
- 3.0 | ... --> ... | xxxxx |&nbsp;| 3.0 | ... --> ... | xxxxxx
+ | # | time | subtitle |&nbsp;| # | time | subtitle |
+ | --- | --- | --- | --- |---| --- | --- |
+ | 1.0 | ... --> a | xxxxx |&nbsp;| 1.0 | ... --> a1 | xxxxxx |
+ | 2.0 | b --> c | xxxxx |&nbsp;| 2.0 | b1 --> c1 | xxxxxx |
+ | 3.0 | ... --> ... | xxxxx |&nbsp;| 3.0 | ... --> ... | xxxxxx |
  
     b = a + (b1 - a1)
     c = b + (c1 - b1)
