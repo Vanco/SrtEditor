@@ -24,6 +24,8 @@ public class SrtTableController {
     public Button btnOpenSrt;
     public ChoiceBox<Charset> charset;
     public Button btnSaveSrt;
+    public Button btnTimeShift;
+    public TextField timeShift;
 
     private ObservableList<SrtRecord> masterData = FXCollections.observableArrayList();
 
@@ -48,6 +50,11 @@ public class SrtTableController {
 
         srtTable.setItems(sortedData);
 
+        timeShift.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("(?<=\\s|^)\\d+(?=\\s|$)")) {
+                timeShift.setText(newValue.replaceAll("[^\\-0-9]*", ""));
+            }
+        });
     }
 
     public void openSrtFile() {
@@ -203,6 +210,26 @@ public class SrtTableController {
     public void removeItem(SrtRecord srtRecord) {
         masterData.removeAll(srtRecord);
         adjustId();
+    }
+
+    public void shiftTime() {
+        if (!timeShift.getText().trim().isEmpty()) {
+            long seconds = Long.parseLong(timeShift.getText().trim());
+            shiftTime(seconds * 1000);
+        }
+    }
+
+    /**
+     * Shift time by (+/-) milliseconds.
+     * @param milliseconds time in milliseconds to shift
+     */
+    public void shiftTime(long milliseconds) {
+        ObservableList<SrtRecord> sorted = srtTable.getItems();
+        for (SrtRecord r : sorted) {
+            SrtTime time = new SrtTime(r.getTime());
+            time.shift(milliseconds);
+            r.setTime(time.getSrtTime());
+        }
     }
 
     private void adjustId() {

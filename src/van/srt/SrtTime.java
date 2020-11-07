@@ -94,4 +94,9 @@ public class SrtTime {
     public String toString() {
         return getSrtTime();
     }
+
+    public void shift(long milliseconds) {
+        this.start.set(start.get() + milliseconds);
+        this.end.set(end.get() + milliseconds);
+    }
 }
