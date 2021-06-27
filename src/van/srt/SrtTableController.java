@@ -214,8 +214,8 @@ public class SrtTableController {
 
     public void shiftTime() {
         if (!timeShift.getText().trim().isEmpty()) {
-            long seconds = Long.parseLong(timeShift.getText().trim());
-            shiftTime(seconds * 1000);
+            long milliseconds = Long.parseLong(timeShift.getText().trim());
+            shiftTime(milliseconds);
         }
     }
 

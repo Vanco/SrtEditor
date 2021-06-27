@@ -24,7 +24,7 @@
         <Button fx:id="btnOpenSrt" onAction="#openSrtFile" text="%button.load" />
         <Button fx:id="btnSaveSrt" onAction="#saveSrtFile" text="%button.save" />
       <TextField fx:id="timeShift" prefHeight="27.0" prefWidth="84.0" promptText="+/-Number" />
-      <Label text="s" />
+      <Label text="mills" />
       <Button fx:id="btnTimeShift" mnemonicParsing="false" onAction="#shiftTime" text="%button.timeshift" />
     </HBox>
     <Label fx:id="filename" minWidth="400" HBox.hgrow="ALWAYS" />
