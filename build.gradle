@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'org.beryx.jlink' version '2.24.1'
+}
+
+group 'io.vanstudio'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.aliyun.com/repository/gradle-plugin"
+    }
+}
+
+sourceCompatibility = '16'
+targetCompatibility = '16'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainModule = 'io.vanstuido.srt'
+    mainClass = 'io.vanstudio.srt.Main'
+}
+
+javafx {
+    version = '16'
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.graphics']
+}
+
+jlink {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    launcher{
+        name = 'SrtEdit'
+        jvmArgs = ['-Dlog4j.configurationFile=./log4j2.xml']
+    }
+    jpackage {
+        icon = 'src/main/resources/icons/srte.icns'
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+

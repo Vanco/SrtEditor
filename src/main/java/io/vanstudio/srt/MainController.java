@@ -1,11 +1,10 @@
-package van.srt;
+package io.vanstudio.srt;
 
 import javafx.animation.AnimationTimer;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -113,9 +112,11 @@ public class MainController {
 
     public void about() {
         Alert alert = new Alert(Alert.AlertType.NONE);
-        alert.setGraphic(new ImageView("/icons/srte-76x76.png"));
+        alert.setGraphic(new ImageView(ImageUtil.createImage(this, "/icons/srte-76x76.png")));
         alert.setHeaderText(resources.getString("app.name") + " " + Version.version());
-        alert.setContentText("© 2016 VanStudio");
+        final int year = Calendar.getInstance().get(Calendar.YEAR);
+        final String contentText = "© "+year+" VanStudio";
+        alert.setContentText(contentText);
         alert.getButtonTypes().addAll(ButtonType.CLOSE);
         alert.show();
     }
@@ -227,7 +228,7 @@ public class MainController {
         dialog.setTitle(resources.getString("dialog.merge.srt.file"));
         dialog.setHeaderText(resources.getString("dialog.merge.the.two.srt.file.into.one"));
 
-        dialog.setGraphic(new ImageView("/icons/merge-76x76.png"));
+        dialog.setGraphic(new ImageView(ImageUtil.createImage(this, "/icons/merge-76x76.png")));
 
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.NEXT, ButtonType.CANCEL);
 

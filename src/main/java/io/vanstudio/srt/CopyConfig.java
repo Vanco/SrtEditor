@@ -1,4 +1,4 @@
-package van.srt;
+package io.vanstudio.srt;
 
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleLongProperty;

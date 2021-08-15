@@ -1,4 +1,4 @@
-package van.srt;
+package io.vanstudio.srt;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,8 @@ import java.io.Reader;
  */
 public class SrtReader extends BufferedReader {
     private static final int BOM = 0xFEFF;
+    private String cacheStr;
+
     public SrtReader(Reader in) {
         super(in);
         detectAndRemoveBom();
@@ -37,25 +39,42 @@ public class SrtReader extends BufferedReader {
     }
 
     private String readSub() throws IOException {
-        String s, result = "";
-        for (;;) {
+        String s;
+        StringBuilder result = new StringBuilder();
+        for (; ; ) {
             s = readLine();
-            if (s == null || s.isEmpty()) {
+            if (isNumber(s)) {
                 break;
             }
-            result += s + "\n";
+            if (s.isEmpty()) {
+                continue;
+            }
+            result.append(s).append("\n");
         }
-        return result;
+        return result.toString();
+    }
+
+    private boolean isNumber(String s) {
+        try {
+            Float.parseFloat(s);
+            cacheStr = s;
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private float readId() throws IOException {
-        String s = readLine();
+        String s = cacheStr == null || cacheStr.isEmpty() ? readLine() : cacheStr;
+        // clear cache
+        cacheStr = null;
         try {
-            return Float.valueOf(s);
+            return Float.parseFloat(s);
         } catch (NumberFormatException e) {
             System.err.format("NumberFormatException: %s%n", e);
             // if detectAndRemoveBom fail, example, when open a (UTF-8 with BOM) srt file with wrong charset like GB2312
             // the NumberFormatException will thrown. most of time it is in first line of the file, so just return 1.
+
             return 1.0f;
         }
     }

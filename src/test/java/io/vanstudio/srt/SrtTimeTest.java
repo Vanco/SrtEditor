@@ -1,4 +1,4 @@
-//package van.srt;
+//package io.vanstuido.srt;
 //
 //import static org.testng.Assert.*;
 //

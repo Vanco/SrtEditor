@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="5" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="van.srt.SrtTableController">
+<VBox spacing="5" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.vanstudio.srt.SrtTableController">
     <HBox alignment="BOTTOM_LEFT" spacing="10">
         <padding>
             <Insets top="5" />

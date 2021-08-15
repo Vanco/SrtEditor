@@ -1,37 +1,23 @@
-package van.srt;
+package io.vanstudio.srt;
 
-import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import java.nio.charset.Charset;
 
 /**
  * &copy; fanhuagang@gmail.com
- * Created by van on 23/10/2016.
+ * Created by van on 25/10/2016.
  */
-public class SrtRecord {
-    private final SimpleFloatProperty id;
+public class MergeConfig {
     private final SimpleStringProperty time;
     private final SimpleStringProperty sub;
+    private final SimpleObjectProperty<Charset> charset;
 
-    public SrtRecord() {
-        this(0, "", "");
-    }
-
-    public SrtRecord(float id, String time, String sub) {
-        this.id = new SimpleFloatProperty(id);
+    public MergeConfig(String time, String sub, Charset charset) {
         this.time = new SimpleStringProperty(time);
         this.sub = new SimpleStringProperty(sub);
-    }
-
-    public float getId() {
-        return id.get();
-    }
-
-    public SimpleFloatProperty idProperty() {
-        return id;
-    }
-
-    public void setId(float id) {
-        this.id.set(id);
+        this.charset = new SimpleObjectProperty<>(charset);
     }
 
     public String getTime() {
@@ -58,8 +44,20 @@ public class SrtRecord {
         this.sub.set(sub);
     }
 
+    public Charset getCharset() {
+        return charset.get();
+    }
+
+    public SimpleObjectProperty<Charset> charsetProperty() {
+        return charset;
+    }
+
+    public void setCharset(Charset charset) {
+        this.charset.set(charset);
+    }
+
     @Override
     public String toString() {
-        return id+"|"+time+"|"+sub;
+        return time.toString() + sub.toString() + charset;
     }
 }

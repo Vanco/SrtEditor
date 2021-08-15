@@ -1,4 +1,4 @@
-package van.srt;
+package io.vanstudio.srt;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

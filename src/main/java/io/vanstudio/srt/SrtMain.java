@@ -1,4 +1,4 @@
-package van.srt;
+package io.vanstudio.srt;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

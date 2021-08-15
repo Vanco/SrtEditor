@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <BorderPane prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.112-ea"
-            xmlns:fx="http://javafx.com/fxml" fx:controller="van.srt.MainController" stylesheets="/css/main.css">
+            xmlns:fx="http://javafx.com/fxml" fx:controller="io.vanstudio.srt.MainController" stylesheets="@../css/main.css">
 
     <center>
         <HBox BorderPane.alignment="CENTER">
@@ -47,13 +47,13 @@
             <Button text="Merge" fx:id="btnMerge" onAction="#merge" styleClass="tool-button">
                 <graphic>
                     <ImageView>
-                        <Image url="/icons/merge-32x32.png"/>
+                        <Image url="@../icons/merge-32x32.png"/>
                     </ImageView>
                 </graphic>
             </Button>
             <Pane HBox.hgrow="ALWAYS"/>
             <ImageView onMouseClicked="#about">
-                <Image url="/icons/help-32x32.png"/>
+                <Image url="@../icons/help-32x32.png"/>
             </ImageView>
         </HBox>
     </top>
