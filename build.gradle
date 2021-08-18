@@ -23,7 +23,7 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'io.vanstuido.srt'
+    mainModule = 'io.vanstudio.srt'
     mainClass = 'io.vanstudio.srt.Main'
 }
 

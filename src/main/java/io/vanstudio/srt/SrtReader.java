@@ -43,13 +43,11 @@ public class SrtReader extends BufferedReader {
         StringBuilder result = new StringBuilder();
         for (; ; ) {
             s = readLine();
-            if (isNumber(s)) {
+            if (s == null || isNumber(s)) {
                 break;
+            } else if (!s.isEmpty()) {
+                result.append(s).append("\n");
             }
-            if (s.isEmpty()) {
-                continue;
-            }
-            result.append(s).append("\n");
         }
         return result.toString();
     }
