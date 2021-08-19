@@ -71,28 +71,21 @@ public class SrtTableController {
     }
 
     private Charset detect() {
-        BufferedReader in = null;
         ArrayList<Charset> charsets = new ArrayList<>();
         charsets.add(charset.getValue()); // User choose first
         charsets.add(Charset.defaultCharset()); // system default seconds
+        charsets.add(StandardCharsets.UTF_16); // Standard charset for most case
+        charsets.add(StandardCharsets.UTF_16LE);
+        charsets.add(StandardCharsets.UTF_16BE);
         charsets.addAll(charset.getItems()); // than try to guess
 
         for (Charset c : charsets) {
-            try {
-                in = Files.newBufferedReader(path, c);
-
+            try (BufferedReader in = Files.newBufferedReader(path, c)) {
                 in.readLine();
 
                 return c;
-
             } catch (IOException e) {
-                //System.out.println(e.getMessage());
-            } finally {
-                if (in != null) try {
-                    in.close();
-                } catch (IOException e) {
-                    //ignore
-                }
+                // ignore
             }
         }
 

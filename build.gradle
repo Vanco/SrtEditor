@@ -36,7 +36,7 @@ jlink {
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
     launcher{
         name = 'SrtEdit'
-        jvmArgs = ['-Dlog4j.configurationFile=./log4j2.xml']
+        jvmArgs = ['-Dlog4j.configurationFile=./log4j2.xml','-Djava.locale.providers=HOST,CLDR,COMPAT']
     }
     jpackage {
         icon = 'src/main/resources/icons/srte.icns'
