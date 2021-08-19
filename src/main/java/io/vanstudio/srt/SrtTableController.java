@@ -93,16 +93,12 @@ public class SrtTableController {
     }
 
     private void loadFile(Charset detect) {
-        try {
+        try (BufferedReader in = Files.newBufferedReader(path, detect); SrtReader reader = new SrtReader(in)) {
             masterData.clear();
-            BufferedReader in = Files.newBufferedReader(path, detect);
-            SrtReader reader = new SrtReader(in);
             while (reader.ready()) {
                 SrtRecord srtRecord = reader.readRecord();
                 masterData.add(srtRecord);
             }
-            reader.close();
-            in.close();
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
             if (e instanceof MalformedInputException) {
@@ -124,26 +120,23 @@ public class SrtTableController {
     public void saveSrtFile() {
         if (srtTable.getItems().isEmpty()) return;
 
-        try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(resources.getString("dialog.filechooder.save.srt.file"));
-            fileChooser.setInitialFileName(defaultFileName());
-            fileChooser.setInitialDirectory(path.getParent().toFile());
-            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SRT", "*.srt"));
-            File file = fileChooser.showSaveDialog(btnSaveSrt.getScene().getWindow());
-            if (file != null) {
-                Path savePath = file.toPath();
-                BufferedWriter bufferedWriter = Files.newBufferedWriter(savePath, charset.getValue());
-                SrtWriter writer = new SrtWriter(bufferedWriter);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle(resources.getString("dialog.filechooder.save.srt.file"));
+        fileChooser.setInitialFileName(defaultFileName());
+        fileChooser.setInitialDirectory(path.getParent().toFile());
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SRT", "*.srt"));
+        File file = fileChooser.showSaveDialog(btnSaveSrt.getScene().getWindow());
+        if (file != null) {
+            Path savePath = file.toPath();
+            try (BufferedWriter bufferedWriter = Files.newBufferedWriter(savePath, charset.getValue());
+                    SrtWriter writer = new SrtWriter(bufferedWriter)) {
                 for (SrtRecord srtRecord : srtTable.getItems()) {
                     writer.write(srtRecord);
                 }
                 writer.flush();
-                writer.close();
-                bufferedWriter.close();
+            } catch (IOException e) {
+                System.err.format("IOException: %s%n", e);
             }
-        } catch (IOException e) {
-            System.err.format("IOException: %s%n", e);
         }
     }
 
@@ -214,6 +207,7 @@ public class SrtTableController {
 
     /**
      * Shift time by (+/-) milliseconds.
+     *
      * @param milliseconds time in milliseconds to shift
      */
     public void shiftTime(long milliseconds) {

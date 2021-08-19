@@ -115,7 +115,7 @@ public class MainController {
         alert.setGraphic(new ImageView(ImageUtil.createImage(this, "/icons/srte-76x76.png")));
         alert.setHeaderText(resources.getString("app.name") + " " + Version.version());
         final int year = Calendar.getInstance().get(Calendar.YEAR);
-        final String contentText = "© "+year+" VanStudio";
+        final String contentText = "© " + year + " VanStudio";
         alert.setContentText(contentText);
         alert.getButtonTypes().addAll(ButtonType.CLOSE);
         alert.show();
@@ -196,11 +196,10 @@ public class MainController {
             File file = fileChooser.showSaveDialog(btnMerge.getScene().getWindow());
 
             if (file != null) {
-                try {
-                    Path savePath = file.toPath();
-                    Charset charset = mergeConfig.getCharset();
-                    BufferedWriter bufferedWriter = Files.newBufferedWriter(savePath, charset);
-                    SrtWriter writer = new SrtWriter(bufferedWriter);
+                Path savePath = file.toPath();
+                Charset charset = mergeConfig.getCharset();
+                try (BufferedWriter bufferedWriter = Files.newBufferedWriter(savePath, charset);
+                     SrtWriter writer = new SrtWriter(bufferedWriter)) {
 
                     ObservableList<SrtRecord> left = leftSrtController.srtTable.getItems();
                     ObservableList<SrtRecord> right = rightSrtController.srtTable.getItems();
@@ -213,8 +212,6 @@ public class MainController {
                         writer.write(srtRecord);
                     }
                     writer.flush();
-                    writer.close();
-                    bufferedWriter.close();
                 } catch (IOException e) {
                     System.err.format("IOException: %s%n", e);
                 }
