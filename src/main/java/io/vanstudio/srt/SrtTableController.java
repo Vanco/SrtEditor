@@ -77,7 +77,7 @@ public class SrtTableController {
         charsets.add(StandardCharsets.UTF_16); // Standard charset for most case
         charsets.add(StandardCharsets.UTF_16LE);
         charsets.add(StandardCharsets.UTF_16BE);
-        charsets.addAll(charset.getItems()); // than try to guess
+        charsets.addAll(charset.getItems()); // Then try to guess
 
         for (Charset c : charsets) {
             try (BufferedReader in = Files.newBufferedReader(path, c)) {
@@ -112,9 +112,10 @@ public class SrtTableController {
     }
 
     public void charsetChanged() {
-        if (path != null) {
-            loadFile(charset.getValue());
-        }
+        //Comment out because we don't want to reload file, keep it for save target charset.
+//        if (path != null) {
+//            loadFile(charset.getValue());
+//        }
     }
 
     public void saveSrtFile() {
