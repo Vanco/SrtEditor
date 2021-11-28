@@ -27,7 +27,7 @@ public class SrtTableController {
     public Button btnTimeShift;
     public TextField timeShift;
 
-    private ObservableList<SrtRecord> masterData = FXCollections.observableArrayList();
+    private final ObservableList<SrtRecord> masterData = FXCollections.observableArrayList();
 
     private Path path;
 
@@ -99,6 +99,7 @@ public class SrtTableController {
                 SrtRecord srtRecord = reader.readRecord();
                 masterData.add(srtRecord);
             }
+            adjustId();
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
             if (e instanceof MalformedInputException) {
@@ -131,8 +132,15 @@ public class SrtTableController {
             Path savePath = file.toPath();
             try (BufferedWriter bufferedWriter = Files.newBufferedWriter(savePath, charset.getValue());
                     SrtWriter writer = new SrtWriter(bufferedWriter)) {
+                SrtRecord cache = null;
                 for (SrtRecord srtRecord : srtTable.getItems()) {
+                    if (cache != null) {
+                        if (srtRecord.getTime().equals(cache.getTime())) {
+                            continue;
+                        }
+                    }
                     writer.write(srtRecord);
+                    cache = srtRecord;
                 }
                 writer.flush();
             } catch (IOException e) {

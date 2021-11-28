@@ -2,6 +2,8 @@ package io.vanstudio.srt;
 
 import javafx.beans.property.SimpleLongProperty;
 
+import java.util.Objects;
+
 /**
  * &copy; fanhuagang@gmail.com
  * Created by van on 29/10/2016.
@@ -98,5 +100,18 @@ public class SrtTime {
     public void shift(long milliseconds) {
         this.start.set(start.get() + milliseconds);
         this.end.set(end.get() + milliseconds);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SrtTime srtTime = (SrtTime) o;
+        return Objects.equals(start, srtTime.start) && Objects.equals(end, srtTime.end) && Objects.equals(duration, srtTime.duration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, end, duration);
     }
 }
