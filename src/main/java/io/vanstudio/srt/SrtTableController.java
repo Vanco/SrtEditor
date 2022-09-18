@@ -112,6 +112,12 @@ public class SrtTableController {
         }
     }
 
+    public void clearAll() {
+        masterData.clear();
+        path = null;
+        filename.setText("");
+    }
+
     public void charsetChanged() {
         //Comment out because we don't want to reload file, keep it for save target charset.
 //        if (path != null) {
@@ -124,14 +130,16 @@ public class SrtTableController {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(resources.getString("dialog.filechooder.save.srt.file"));
-        fileChooser.setInitialFileName(defaultFileName());
-        fileChooser.setInitialDirectory(path.getParent().toFile());
+        if (path != null) {
+            fileChooser.setInitialFileName(defaultFileName());
+            fileChooser.setInitialDirectory(path.getParent().toFile());
+        }
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SRT", "*.srt"));
         File file = fileChooser.showSaveDialog(btnSaveSrt.getScene().getWindow());
         if (file != null) {
             Path savePath = file.toPath();
             try (BufferedWriter bufferedWriter = Files.newBufferedWriter(savePath, charset.getValue());
-                    SrtWriter writer = new SrtWriter(bufferedWriter)) {
+                 SrtWriter writer = new SrtWriter(bufferedWriter)) {
                 SrtRecord cache = null;
                 for (SrtRecord srtRecord : srtTable.getItems()) {
                     if (cache != null) {
@@ -150,6 +158,7 @@ public class SrtTableController {
     }
 
     private String defaultFileName() {
+        if (path == null) return "filename";
         String s = path.getFileName().toString();
         s = s.substring(0, s.indexOf(".srt")) + "_v.srt";
         return s;

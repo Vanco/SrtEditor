@@ -2,11 +2,15 @@ package io.vanstudio.srt;
 
 import javafx.animation.AnimationTimer;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.BufferedWriter;
@@ -30,6 +34,10 @@ public class MainController {
     public Button btnRemove;
     public VBox rightSrt;
     public Button btnMerge;
+    public Button btnTranslate;
+    public ProgressBar bar;
+    public TextArea log;
+    public Button btnProject;
 
     @FXML
     private SrtTableController leftSrtController;
@@ -172,6 +180,12 @@ public class MainController {
         rightSrtController.clear();
     }
 
+    public void project() {
+        leftSrtController.clearAll();
+        rightSrtController.clearAll();
+        log.clear();
+    }
+
     public void merge() {
         // validate
         if (leftSrtController.srtTable.getItems().isEmpty() || rightSrtController.srtTable.getItems().isEmpty()
@@ -214,10 +228,94 @@ public class MainController {
                     writer.flush();
                 } catch (IOException e) {
                     System.err.format("IOException: %s%n", e);
+                    log.appendText(e.getMessage()+"\n");
                 }
             }
 
         });
+    }
+
+
+    public void translate() {
+
+        // validate
+        if (leftSrtController.srtTable.getItems().isEmpty() && rightSrtController.srtTable.getItems().isEmpty()
+                || !leftSrtController.srtTable.getItems().isEmpty() && !rightSrtController.srtTable.getItems().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setHeaderText(resources.getString("dialog.translate.header.could.not.translate"));
+            alert.setContentText(resources.getString("dialog.translate.info.could.not.translate"));
+            alert.show();
+            return;
+        }
+
+        try (Translator g = Translator.getInstance()) {
+
+            Dialog<String> dialog = new ChoiceDialog<String>("Chinese Simplified", g.languages());
+            dialog.setTitle(resources.getString("dialog.translate.srt.file"));
+            dialog.setHeaderText(resources.getString("dialog.translate.choose.language"));
+            Optional<String> result = dialog.showAndWait();
+
+            if (result.isPresent()) {
+                String toLang = g.getCode(result.get());
+                if (leftSrtController.srtTable.getItems().isEmpty()) {
+                    translate(rightSrtController, leftSrtController, toLang, g);
+                } else {
+                    translate(leftSrtController, rightSrtController, toLang, g);
+                }
+            }
+        } catch (IOException e) {
+            log.appendText(e.getMessage()+"\n");
+            e.printStackTrace();
+        }
+    }
+
+    private void translate(SrtTableController form, SrtTableController to, String toLang, Translator g) {
+        final int max = form.srtTable.getItems().size();
+        Task<Integer> task = new Task<>() {
+            @Override
+            protected Integer call() throws Exception {
+                int idx = 0;
+               // g.connect();
+
+                for (SrtRecord srtRecord : form.srtTable.getItems()) {
+                    if (isCancelled()) break;
+
+                    if (idx % 100 == 0) {
+                        g.close();
+                        g.connect();
+                    }
+
+                    String toSub = null;
+                    try {
+                        toSub = g.translateText(srtRecord.getSub(), "auto", toLang);
+                    } catch (Exception e) {
+                        log.appendText(e.getMessage()+"\n");
+                        e.printStackTrace();
+                        toSub = srtRecord.getSub();
+                    }
+                    to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), toSub), srtRecord.getId());
+
+                    updateProgress(++idx, max);
+                }
+
+                return idx;
+            }
+        };
+
+        bar.progressProperty().bind(task.progressProperty());
+        bar.setDisable(false);
+        bar.setVisible(true);
+
+        task.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == max || newValue == 1) {
+                bar.setDisable(true);
+                bar.setVisible(false);
+            }
+        });
+
+        // start translate
+        new Thread(task).start();
+
     }
 
     private Dialog<MergeConfig> createMergeConfigDialog() {
@@ -342,5 +440,4 @@ public class MainController {
                 "Both".equals(mergeConfig.getSub()) ? lsr.getSub() + rsr.getSub() : "Left".equals(mergeConfig.getSub()) ? lsr.getSub() : rsr.getSub()
         );
     }
-
 }

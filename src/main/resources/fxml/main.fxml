@@ -44,18 +44,41 @@
     </center>
     <top>
         <HBox styleClass="tool-bar">
-            <Button text="Merge" fx:id="btnMerge" onAction="#merge" styleClass="tool-button">
+            <Button text="New Project" fx:id="btnProject" onAction="#project" styleClass="tool-button">
                 <graphic>
-                    <ImageView>
-                        <Image url="@../icons/merge-32x32.png"/>
+                    <ImageView fitWidth="24" fitHeight="24">
+                        <Image url="@../icons/new.png"/>
                     </ImageView>
                 </graphic>
             </Button>
+            <Button text="Merge" fx:id="btnMerge" onAction="#merge" styleClass="tool-button">
+                <graphic>
+                    <ImageView fitWidth="24" fitHeight="24">
+                        <Image url="@../icons/merge.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button text="Translate" fx:id="btnTranslate" onAction="#translate" styleClass="tool-button">
+                <graphic>
+                    <ImageView fitWidth="24" fitHeight="24">
+                        <Image url="@../icons/g_translate_24px_rounded.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <ProgressBar fx:id="bar" disable="true" visible="false"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <ImageView onMouseClicked="#about">
                 <Image url="@../icons/help-32x32.png"/>
             </ImageView>
         </HBox>
     </top>
+    <bottom>
+        <HBox>
+            <padding>
+                <Insets bottom="5" left="5" right="5" top="5"/>
+            </padding>
+            <TextArea fx:id="log" HBox.hgrow="ALWAYS"/>
+        </HBox>
+    </bottom>
 
 </BorderPane>
