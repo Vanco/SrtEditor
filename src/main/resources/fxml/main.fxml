@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import java.lang.String?>
 <BorderPane prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.112-ea"
             xmlns:fx="http://javafx.com/fxml" fx:controller="io.vanstudio.srt.MainController" stylesheets="@../css/main.css">
 
@@ -58,13 +59,38 @@
                     </ImageView>
                 </graphic>
             </Button>
-            <Button text="Translate" fx:id="btnTranslate" onAction="#translate" styleClass="tool-button">
+            <Separator orientation="VERTICAL"/>
+            <ChoiceBox fx:id="cbxLanguage" maxHeight="32"/>
+            <MenuButton text="Translator" fx:id="mbTranslate">
                 <graphic>
                     <ImageView fitWidth="24" fitHeight="24">
                         <Image url="@../icons/g_translate_24px_rounded.png"/>
                     </ImageView>
                 </graphic>
-            </Button>
+                <items>
+                    <MenuItem text="Google Translate" id="google" onAction="#translate">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24">
+                                <Image url="@../icons/google.png"/>
+                            </ImageView>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem text="Bing Translate" id="bing" onAction="#translate">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24">
+                                <Image url="@../icons/bing.png"/>
+                            </ImageView>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem text="YaoDao Translate" id="youdao" onAction="#translate">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24">
+                                <Image url="@../icons/logo_cidian@2x.png"/>
+                            </ImageView>
+                        </graphic>
+                    </MenuItem>
+                </items>
+            </MenuButton>
             <ProgressBar fx:id="bar" disable="true" visible="false"/>
             <Pane HBox.hgrow="ALWAYS"/>
             <ImageView onMouseClicked="#about">

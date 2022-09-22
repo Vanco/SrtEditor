@@ -1,8 +1,10 @@
 package io.vanstudio.srt;
 
 import javafx.animation.AnimationTimer;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -23,6 +25,8 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.*;
 
+import static io.vanstudio.srt.Languages.getCode;
+
 /**
  * &copy; fanhuagang@gmail.com
  * Created by van on 23/10/2016.
@@ -38,6 +42,8 @@ public class MainController {
     public ProgressBar bar;
     public TextArea log;
     public Button btnProject;
+    public ChoiceBox<String> cbxLanguage;
+    public MenuButton mbTranslate;
 
     @FXML
     private SrtTableController leftSrtController;
@@ -48,6 +54,9 @@ public class MainController {
 
     @FXML
     private void initialize() {
+
+        cbxLanguage.setItems(FXCollections.observableArrayList(Languages.defaultLanguages()));
+        cbxLanguage.setValue("Chinese Simplified");
         // An AnimationTimer, whose handle(...) method will be invoked once
         // on each frame pulse (i.e. each rendering of the scene graph)
         AnimationTimer timer = new AnimationTimer() {
@@ -228,7 +237,7 @@ public class MainController {
                     writer.flush();
                 } catch (IOException e) {
                     System.err.format("IOException: %s%n", e);
-                    log.appendText(e.getMessage()+"\n");
+                    log.appendText(e.getMessage() + "\n");
                 }
             }
 
@@ -236,7 +245,7 @@ public class MainController {
     }
 
 
-    public void translate() {
+    public void translate(ActionEvent event) {
 
         // validate
         if (leftSrtController.srtTable.getItems().isEmpty() && rightSrtController.srtTable.getItems().isEmpty()
@@ -248,25 +257,25 @@ public class MainController {
             return;
         }
 
-        try (Translator g = Translator.getInstance()) {
+        mbTranslate.setDisable(true);
 
-            Dialog<String> dialog = new ChoiceDialog<String>("Chinese Simplified", g.languages());
-            dialog.setTitle(resources.getString("dialog.translate.srt.file"));
-            dialog.setHeaderText(resources.getString("dialog.translate.choose.language"));
-            Optional<String> result = dialog.showAndWait();
+        MenuItem source = (MenuItem) event.getSource();
 
-            if (result.isPresent()) {
-                String toLang = g.getCode(result.get());
-                if (leftSrtController.srtTable.getItems().isEmpty()) {
-                    translate(rightSrtController, leftSrtController, toLang, g);
-                } else {
-                    translate(leftSrtController, rightSrtController, toLang, g);
-                }
+        try (Translator g = TranslatorFactory.getInstance(source.getId())) {
+
+            String toLang = getCode(cbxLanguage.getValue());
+            if (leftSrtController.srtTable.getItems().isEmpty()) {
+                translate(rightSrtController, leftSrtController, toLang, g);
+            } else {
+                translate(leftSrtController, rightSrtController, toLang, g);
             }
+
         } catch (IOException e) {
-            log.appendText(e.getMessage()+"\n");
+            log.appendText(e.getMessage() + "\n");
             e.printStackTrace();
         }
+        
+        mbTranslate.setDisable(false);
     }
 
     private void translate(SrtTableController form, SrtTableController to, String toLang, Translator g) {
@@ -275,7 +284,7 @@ public class MainController {
             @Override
             protected Integer call() throws Exception {
                 int idx = 0;
-               // g.connect();
+                // g.connect();
 
                 for (SrtRecord srtRecord : form.srtTable.getItems()) {
                     if (isCancelled()) break;
@@ -289,13 +298,15 @@ public class MainController {
                     try {
                         toSub = g.translateText(srtRecord.getSub(), "auto", toLang);
                     } catch (Exception e) {
-                        log.appendText(e.getMessage()+"\n");
+                        log.appendText(e.getMessage() + "\n");
                         e.printStackTrace();
                         toSub = srtRecord.getSub();
                     }
                     to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), toSub), srtRecord.getId());
 
                     updateProgress(++idx, max);
+
+                    Thread.sleep(100);
                 }
 
                 return idx;
