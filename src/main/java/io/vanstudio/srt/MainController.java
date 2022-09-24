@@ -38,12 +38,13 @@ public class MainController {
     public Button btnRemove;
     public VBox rightSrt;
     public Button btnMerge;
-    public Button btnTranslate;
     public ProgressBar bar;
     public TextArea log;
     public Button btnProject;
     public ChoiceBox<String> cbxLanguage;
     public MenuButton mbTranslate;
+    public Button btnSyncTime;
+    public Button btnCancel;
 
     @FXML
     private SrtTableController leftSrtController;
@@ -184,6 +185,9 @@ public class MainController {
 
     }
 
+    /**
+     * Clear selection
+     */
     public void clear() {
         leftSrtController.clear();
         rightSrtController.clear();
@@ -274,7 +278,7 @@ public class MainController {
             log.appendText(e.getMessage() + "\n");
             e.printStackTrace();
         }
-        
+
         mbTranslate.setDisable(false);
     }
 
@@ -285,7 +289,7 @@ public class MainController {
             protected Integer call() throws Exception {
                 int idx = 0;
                 // g.connect();
-
+                Random random = new Random();
                 for (SrtRecord srtRecord : form.srtTable.getItems()) {
                     if (isCancelled()) break;
 
@@ -306,21 +310,34 @@ public class MainController {
 
                     updateProgress(++idx, max);
 
-                    Thread.sleep(100);
+                    Thread.sleep(random.nextInt(800));
                 }
 
                 return idx;
             }
         };
 
+        btnCancel.setOnAction(event -> {
+            task.cancel();
+            bar.setDisable(true);
+            bar.setVisible(false);
+            btnCancel.setDisable(true);
+            btnCancel.setVisible(false);
+        });
+
+        bar.progressProperty().unbind();
         bar.progressProperty().bind(task.progressProperty());
         bar.setDisable(false);
         bar.setVisible(true);
+        btnCancel.setDisable(false);
+        btnCancel.setVisible(true);
 
         task.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == max || newValue == 1) {
+            if (newValue == max || newValue == -1) {
                 bar.setDisable(true);
                 bar.setVisible(false);
+                btnCancel.setDisable(true);
+                btnCancel.setVisible(false);
             }
         });
 
@@ -450,5 +467,30 @@ public class MainController {
                 "Left".equals(mergeConfig.getTime()) ? lsr.getTime() : rsr.getTime(),
                 "Both".equals(mergeConfig.getSub()) ? lsr.getSub() + rsr.getSub() : "Left".equals(mergeConfig.getSub()) ? lsr.getSub() : rsr.getSub()
         );
+    }
+
+    public void syncTime(ActionEvent event) {
+        if (!(leftSrtController.srtTable.getItems().isEmpty() || rightSrtController.srtTable.getItems().isEmpty())) {
+            SrtRecord srtRecordLeft = leftSrtController.srtTable.getItems().get(0);
+            SrtRecord srtRecordRight = rightSrtController.srtTable.getItems().get(0);
+
+            SrtTime srtTimeLeft = new SrtTime(srtRecordLeft.getTime());
+            SrtTime srtTimeRight = new SrtTime(srtRecordRight.getTime());
+
+            long shiftTime = srtTimeLeft.getStart() - srtTimeRight.getStart();
+            if (shiftTime > 0) {
+                leftSrtController.timeShift.setText("-" + shiftTime);
+                rightSrtController.timeShift.setText("+" + shiftTime);
+            } else {
+                leftSrtController.timeShift.setText("+" + (-shiftTime));
+                rightSrtController.timeShift.setText("-" + (-shiftTime));
+            }
+        }
+    }
+
+    public void showLog(ActionEvent event) {
+        ToggleButton source = (ToggleButton) event.getSource();
+        log.setVisible(source.isSelected());
+        log.setManaged(source.isSelected());
     }
 }

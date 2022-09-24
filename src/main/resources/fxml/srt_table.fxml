@@ -14,20 +14,20 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox spacing="5" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.vanstudio.srt.SrtTableController">
-    <HBox alignment="BOTTOM_LEFT" spacing="10">
+    <HBox alignment="CENTER_LEFT" spacing="10">
         <padding>
             <Insets top="5" />
         </padding>
-        <ChoiceBox fx:id="charset" onAction="#charsetChanged" prefWidth="100.0">
+        <ChoiceBox fx:id="charset" onAction="#charsetChanged" prefWidth="100.0" styleClass="sub-button">
             <value><StandardCharsets fx:constant="UTF_8" /></value>
         </ChoiceBox>
-        <Button fx:id="btnOpenSrt" onAction="#openSrtFile" text="%button.load" />
-        <Button fx:id="btnSaveSrt" onAction="#saveSrtFile" text="%button.save" />
+        <Button fx:id="btnOpenSrt" onAction="#openSrtFile" text="%button.load" styleClass="sub-button"/>
+        <Button fx:id="btnSaveSrt" onAction="#saveSrtFile" text="%button.save" styleClass="sub-button"/>
       <TextField fx:id="timeShift" prefHeight="27.0" prefWidth="84.0" promptText="+/-Number" />
       <Label text="mills" />
-      <Button fx:id="btnTimeShift" mnemonicParsing="false" onAction="#shiftTime" text="%button.timeshift" />
+      <Button fx:id="btnTimeShift" mnemonicParsing="false" onAction="#shiftTime" text="%button.timeshift" styleClass="sub-button"/>
     </HBox>
-    <Label fx:id="filename" minWidth="400" HBox.hgrow="ALWAYS" />
+    <Label fx:id="filename" minWidth="400" HBox.hgrow="ALWAYS"  />
     <TableView fx:id="srtTable" editable="true" prefWidth="800.0" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn prefWidth="60" sortable="false" text="%table.col.id">

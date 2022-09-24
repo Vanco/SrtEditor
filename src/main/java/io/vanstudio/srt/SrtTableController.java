@@ -116,6 +116,7 @@ public class SrtTableController {
         masterData.clear();
         path = null;
         filename.setText("");
+        timeShift.setText("");
     }
 
     public void charsetChanged() {
@@ -153,6 +154,11 @@ public class SrtTableController {
                 writer.flush();
             } catch (IOException e) {
                 System.err.format("IOException: %s%n", e);
+            }
+
+            if (path == null) {
+                path = savePath;
+                filename.setText(file.getAbsolutePath());;
             }
         }
     }

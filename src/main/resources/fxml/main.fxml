@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.String?>
 <BorderPane prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.112-ea"
             xmlns:fx="http://javafx.com/fxml" fx:controller="io.vanstudio.srt.MainController" stylesheets="@../css/main.css">
 
@@ -19,26 +17,86 @@
                 <padding>
                     <Insets left="5" right="5"/>
                 </padding>
-                <Button text="%button.copy.to.left" disable="true" fx:id="btnCopyToLeft" onAction="#copyToLeft" focusTraversable="false">
+                <Pane prefHeight="100"/>
+                <Button fx:id="btnSyncTime" onAction="#syncTime" focusTraversable="false" styleClass="tool-button">
+                    <padding>
+                        <Insets bottom="2" left="2" right="2" top="2"/>
+                    </padding>
+                    <tooltip>
+                        <Tooltip text="%button.sync.time.tip"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24">
+                            <Image url="@../icons/time.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button disable="true" fx:id="btnCopyToLeft" onAction="#copyToLeft" focusTraversable="false" styleClass="tool-button">
+                    <padding>
+                        <Insets bottom="2" left="2" right="2" top="2"/>
+                    </padding>
                     <tooltip>
                         <Tooltip text="%button.copy.to.left.tip"/>
                     </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24">
+                            <Image url="@../icons/arrowleft.png"/>
+                        </ImageView>
+                    </graphic>
                 </Button>
-                <Button text="%button.copy.to.right" disable="true" fx:id="btnCopyToRight" onAction="#copyToRight" focusTraversable="false">
+                <Button disable="true" fx:id="btnCopyToRight" onAction="#copyToRight" focusTraversable="false" styleClass="tool-button">
+                    <padding>
+                        <Insets bottom="2" left="2" right="2" top="2"/>
+                    </padding>
                     <tooltip>
                         <Tooltip text="%button.copy.to.right.tip"/>
                     </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24">
+                            <Image url="@../icons/arrowright.png"/>
+                        </ImageView>
+                    </graphic>
                 </Button>
-                <Button text="%button.remove" disable="true" fx:id="btnRemove" onAction="#remove" focusTraversable="false">
+                <Button disable="true" fx:id="btnRemove" onAction="#remove" focusTraversable="false"  styleClass="tool-button">
+                    <padding>
+                        <Insets bottom="2" left="2" right="2" top="2"/>
+                    </padding>
                     <tooltip>
                         <Tooltip text="%button.remove.tip"/>
                     </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24">
+                            <Image url="@../icons/remove.png"/>
+                        </ImageView>
+                    </graphic>
                 </Button>
-                <Button text="%button.clear" onAction="#clear" focusTraversable="false">
+                <Button onAction="#clear" focusTraversable="false" styleClass="tool-button">
+                    <padding>
+                        <Insets bottom="2" left="2" right="2" top="2"/>
+                    </padding>
                     <tooltip>
                         <Tooltip text="%button.clear.tip"/>
                     </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24">
+                            <Image url="@../icons/unselect.png"/>
+                        </ImageView>
+                    </graphic>
                 </Button>
+                <Pane VBox.vgrow="ALWAYS"/>
+                <ToggleButton onAction="#showLog" focusTraversable="false" styleClass="tool-button">
+                    <padding>
+                        <Insets bottom="2" left="2" right="2" top="2"/>
+                    </padding>
+                    <tooltip>
+                        <Tooltip text="Show/Hide logging windows"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24">
+                            <Image url="@../icons/log-win.png"/>
+                        </ImageView>
+                    </graphic>
+                </ToggleButton>
             </VBox>
             <fx:include source="srt_table.fxml" fx:id="rightSrt" HBox.hgrow="SOMETIMES"/>
         </HBox>
@@ -60,8 +118,8 @@
                 </graphic>
             </Button>
             <Separator orientation="VERTICAL"/>
-            <ChoiceBox fx:id="cbxLanguage" maxHeight="32"/>
-            <MenuButton text="Translator" fx:id="mbTranslate">
+            <ChoiceBox fx:id="cbxLanguage" maxHeight="32" styleClass="tool-button"/>
+            <MenuButton text="Translator" fx:id="mbTranslate" styleClass="tool-button">
                 <graphic>
                     <ImageView fitWidth="24" fitHeight="24">
                         <Image url="@../icons/g_translate_24px_rounded.png"/>
@@ -92,6 +150,16 @@
                 </items>
             </MenuButton>
             <ProgressBar fx:id="bar" disable="true" visible="false"/>
+            <Button fx:id="btnCancel" disable="true" visible="false" styleClass="tool-button">
+                <padding>
+                    <Insets bottom="2" left="2" right="2" top="2"/>
+                </padding>
+                <graphic>
+                    <ImageView fitWidth="16" fitHeight="16">
+                        <Image url="@../icons/remove.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
             <Pane HBox.hgrow="ALWAYS"/>
             <ImageView onMouseClicked="#about">
                 <Image url="@../icons/help-32x32.png"/>
@@ -103,7 +171,7 @@
             <padding>
                 <Insets bottom="5" left="5" right="5" top="5"/>
             </padding>
-            <TextArea fx:id="log" HBox.hgrow="ALWAYS"/>
+            <TextArea fx:id="log" visible="false" managed="false" HBox.hgrow="ALWAYS"/>
         </HBox>
     </bottom>
 
