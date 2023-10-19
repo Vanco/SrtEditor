@@ -18,6 +18,19 @@
                     <Insets left="5" right="5"/>
                 </padding>
                 <Pane prefHeight="100"/>
+                <Button onAction="#magic" focusTraversable="false" styleClass="tool-button">
+                    <padding>
+                        <Insets bottom="2" left="2" right="2" top="2"/>
+                    </padding>
+                    <tooltip>
+                        <Tooltip text="%button.magic.tip"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24">
+                            <Image url="@../icons/magic.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
                 <Button fx:id="btnSyncTime" onAction="#syncTime" focusTraversable="false" styleClass="tool-button">
                     <padding>
                         <Insets bottom="2" left="2" right="2" top="2"/>

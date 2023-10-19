@@ -2,6 +2,7 @@ package io.vanstudio.srt;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -252,5 +253,33 @@ public class SrtTableController {
 
     public void clear() {
         srtTable.getSelectionModel().clearSelection();
+    }
+
+    /**
+     * clear blank line, and join time with previous line.
+     */
+    public void magic() {
+        ObservableList<SrtRecord> items = srtTable.getItems();
+        // join empty sub time to previous line.
+        for (int i = 0; i < items.size() -1 ; i++) {
+            SrtRecord one = items.get(i);
+            if (i + 1 < items.size()) {
+                SrtRecord two = items.get(i + 1);
+
+                if (two.getSub().isEmpty()) {
+                    SrtTime twoTime = new SrtTime(two.getTime());
+                    SrtTime oneTime = new SrtTime(one.getTime());
+
+                    SrtTime srtTime = new SrtTime(oneTime.getStart(), twoTime.getEnd() - oneTime.getStart());
+
+                    one.setTime(srtTime.getSrtTime());
+                }
+            }
+        }
+
+        // remove empty sub
+        FilteredList<SrtRecord> emptySubs = items.filtered(srtRecord -> srtRecord.getSub().isEmpty());
+        masterData.removeAll(emptySubs);
+        adjustId();
     }
 }

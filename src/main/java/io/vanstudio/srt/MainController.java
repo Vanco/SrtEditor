@@ -310,7 +310,7 @@ public class MainController {
 
                     updateProgress(++idx, max);
 
-                    Thread.sleep(random.nextInt(800));
+                    Thread.sleep(random.nextInt(500));
                 }
 
                 return idx;
@@ -347,7 +347,7 @@ public class MainController {
     }
 
     private Dialog<MergeConfig> createMergeConfigDialog() {
-        Dialog<MergeConfig> dialog = new Dialog<MergeConfig>();
+        Dialog<MergeConfig> dialog = new Dialog<>();
         dialog.setTitle(resources.getString("dialog.merge.srt.file"));
         dialog.setHeaderText(resources.getString("dialog.merge.the.two.srt.file.into.one"));
 
@@ -492,5 +492,14 @@ public class MainController {
         ToggleButton source = (ToggleButton) event.getSource();
         log.setVisible(source.isSelected());
         log.setManaged(source.isSelected());
+    }
+
+    public void magic(ActionEvent event) {
+        if (!leftSrtController.srtTable.getItems().isEmpty()) {
+            leftSrtController.magic();
+        }
+        if (!rightSrtController.srtTable.getItems().isEmpty()) {
+            rightSrtController.magic();
+        }
     }
 }
