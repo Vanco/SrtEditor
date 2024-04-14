@@ -276,7 +276,7 @@ public class MainController {
 
         } catch (IOException e) {
             log.appendText(e.getMessage() + "\n");
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         mbTranslate.setDisable(false);
@@ -303,14 +303,14 @@ public class MainController {
                         toSub = g.translateText(srtRecord.getSub(), "auto", toLang);
                     } catch (Exception e) {
                         log.appendText(e.getMessage() + "\n");
-                        e.printStackTrace();
+//                        e.printStackTrace();
                         toSub = srtRecord.getSub();
                     }
                     to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), toSub), srtRecord.getId());
 
                     updateProgress(++idx, max);
 
-                    Thread.sleep(random.nextInt(500));
+//                    Thread.sleep(random.nextInt(500));
                 }
 
                 return idx;

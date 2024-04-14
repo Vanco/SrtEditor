@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.PrintWriter;
@@ -61,4 +63,13 @@ public class YoudaoTranslator extends AbstractTranslator{
         return retStr.toString();
     }
 
+    @Override
+    protected void setExtraPostHeader(HttpPost httpPost) {
+
+    }
+
+    @Override
+    protected void setExtraGetHeader(HttpGet httpGet) {
+
+    }
 }

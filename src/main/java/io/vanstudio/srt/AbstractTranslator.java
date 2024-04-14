@@ -9,6 +9,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -35,7 +37,7 @@ public abstract class AbstractTranslator implements Translator {
     public void connect() throws Exception {
         try {
             SSLContext sslContext = SSLContextBuilder.create()
-                    .setProtocol("TLSv1.2")
+                    .setProtocol("TLSv1.3")
                     .loadTrustMaterial(null, new AnyTrustStrategy())
                     .build();
             SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
@@ -68,12 +70,28 @@ public abstract class AbstractTranslator implements Translator {
      */
     protected String postHttp(String url, List<NameValuePair> nvps) throws Exception {
         String responseStr = "";
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8);
+        responseStr = doPost(new URI(url), entity);
+        return responseStr;
+    }
+
+    protected String postHttp(String url, String body) throws Exception {
+        return postHttp(new URI(url), body);
+    }
+    protected String postHttp(URI uri, String body) throws Exception {
+        StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
+        return doPost(uri, entity);
+    }
+
+    private String doPost(URI url, StringEntity entity) throws Exception {
+        String responseStr;
         HttpPost httpPost = new HttpPost(url);
         //重要！！必须设置 http 头，否则返回为乱码
         httpPost.setHeader("User-Agent", USER_AGENT);
+        setExtraPostHeader(httpPost);
 
         // 重要！！ 指定编码，对中文进行编码
-        httpPost.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
+        httpPost.setEntity(entity);
 
         try (CloseableHttpResponse response2 = httpClient.execute(httpPost)) {
             HttpEntity entity2 = response2.getEntity();
@@ -93,6 +111,7 @@ public abstract class AbstractTranslator implements Translator {
         URI uri = new URIBuilder(url).addParameters(params).build();
         HttpGet httpGet = new HttpGet(uri);
         httpGet.setHeader("User-Agent", USER_AGENT);
+        setExtraGetHeader(httpGet);
 
         try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
             HttpEntity entity = response.getEntity();
@@ -106,6 +125,9 @@ public abstract class AbstractTranslator implements Translator {
         }
         return responseStr;
     }
+
+    protected abstract void setExtraPostHeader(HttpPost httpPost);
+    protected abstract void setExtraGetHeader(HttpGet httpGet);
 
     /**
      * Remove all xml tag in string.
