@@ -61,7 +61,7 @@ public class BingTranslator extends AbstractTranslator {
             resp = postHttp(uri, body);
 //        String resp = "[{\"detectedLanguage\":{\"language\":\"en\",\"score\":1.0},\"translations\":[{\"text\":\"（大管弦乐大张旗鼓\\n播放）\\n\",\"to\":\"zh-Hans\"}]}]";
 
-            /**
+            /*
              * [{"detectedLanguage":{"language":"en","score":1.0},"translations":[{"text":"（大管弦乐大张旗鼓\n播放）\n","to":"zh-Hans"}]}]
              */
             Type type = new TypeToken<TranslateResult[]>(){}.getType();
