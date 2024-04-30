@@ -74,21 +74,13 @@ public class MainController {
         timer.start();
 
         leftSrtController.srtTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                btnCopyToRight.setDisable(false);
-            } else {
-                btnCopyToRight.setDisable(true);
-            }
+            btnCopyToRight.setDisable(newValue == null);
             btnRemove.setDisable(btnCopyToLeft.isDisable() && btnCopyToRight.isDisable());
         });
 
 
         rightSrtController.srtTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                btnCopyToLeft.setDisable(false);
-            } else {
-                btnCopyToLeft.setDisable(true);
-            }
+            btnCopyToLeft.setDisable(newValue == null);
 
             btnRemove.setDisable(btnCopyToLeft.isDisable() && btnCopyToRight.isDisable());
         });
@@ -174,14 +166,16 @@ public class MainController {
 
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.get() == buttonTypeLeftOnly) {
-            leftSrtController.removeItem(leftSelectedItem);
-        } else if (result.get() == buttonTypeRightOnly) {
-            rightSrtController.removeItem(rightSelectedItem);
-        } else if (result.get() == buttonTypeBoth) {
-            leftSrtController.removeItem(leftSelectedItem);
-            rightSrtController.removeItem(rightSelectedItem);
-        }
+        result.ifPresent(buttonType -> {
+            if (buttonType == buttonTypeLeftOnly) {
+                leftSrtController.removeItem(leftSelectedItem);
+            } else if (buttonType == buttonTypeRightOnly) {
+                rightSrtController.removeItem(rightSelectedItem);
+            } else if (buttonType == buttonTypeBoth) {
+                leftSrtController.removeItem(leftSelectedItem);
+                rightSrtController.removeItem(rightSelectedItem);
+            }
+        });
 
     }
 
@@ -289,7 +283,7 @@ public class MainController {
             protected Integer call() throws Exception {
                 int idx = 0;
                 // g.connect();
-                Random random = new Random();
+//                Random random = new Random();
                 for (SrtRecord srtRecord : form.srtTable.getItems()) {
                     if (isCancelled()) break;
 
@@ -469,15 +463,9 @@ public class MainController {
         );
     }
 
-    public void syncTime(ActionEvent event) {
+    public void syncTime() {
         if (!(leftSrtController.srtTable.getItems().isEmpty() || rightSrtController.srtTable.getItems().isEmpty())) {
-            SrtRecord srtRecordLeft = leftSrtController.srtTable.getItems().get(0);
-            SrtRecord srtRecordRight = rightSrtController.srtTable.getItems().get(0);
-
-            SrtTime srtTimeLeft = new SrtTime(srtRecordLeft.getTime());
-            SrtTime srtTimeRight = new SrtTime(srtRecordRight.getTime());
-
-            long shiftTime = srtTimeLeft.getStart() - srtTimeRight.getStart();
+            long shiftTime = getShiftTime();
             if (shiftTime > 0) {
                 leftSrtController.timeShift.setText("-" + shiftTime);
                 rightSrtController.timeShift.setText("+" + shiftTime);
@@ -488,13 +476,23 @@ public class MainController {
         }
     }
 
+    private long getShiftTime() {
+        SrtRecord srtRecordLeft = Objects.requireNonNullElse(leftSrtController.getSelectedItem(), leftSrtController.srtTable.getItems().getFirst());
+        SrtRecord srtRecordRight = Objects.requireNonNullElse(rightSrtController.getSelectedItem() ,rightSrtController.srtTable.getItems().getFirst());
+
+        SrtTime srtTimeLeft = new SrtTime(srtRecordLeft.getTime());
+        SrtTime srtTimeRight = new SrtTime(srtRecordRight.getTime());
+
+        return srtTimeLeft.getStart() - srtTimeRight.getStart();
+    }
+
     public void showLog(ActionEvent event) {
         ToggleButton source = (ToggleButton) event.getSource();
         log.setVisible(source.isSelected());
         log.setManaged(source.isSelected());
     }
 
-    public void magic(ActionEvent event) {
+    public void magic() {
         if (!leftSrtController.srtTable.getItems().isEmpty()) {
             leftSrtController.magic();
         }
