@@ -292,7 +292,7 @@ public class MainController {
                         g.connect();
                     }
 
-                    String toSub = null;
+                    String toSub;
                     try {
                         toSub = g.translateText(srtRecord.getSub(), "auto", toLang);
                     } catch (Exception e) {
@@ -426,14 +426,10 @@ public class MainController {
 
         grid.add(other, 3, 3);
 
-        charsetGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            other.setDisable(!((RadioButton) newValue).getText().equals("Other"));
-        });
+        charsetGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> other.setDisable(!((RadioButton) newValue).getText().equals("Other")));
 
 
-        other.onActionProperty().setValue(event -> {
-            otherCharset.setUserData(other.getValue());
-        });
+        other.onActionProperty().setValue(event -> otherCharset.setUserData(other.getValue()));
 
         VBox vBox = new VBox(contentText, grid);
 
