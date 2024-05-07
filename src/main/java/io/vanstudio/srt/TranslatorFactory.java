@@ -5,6 +5,7 @@ public class TranslatorFactory {
         if ("google".equals(provider)) return GoogleTranslator.getInstance();
         if ("bing".equals(provider)) return BingTranslator.getInstance();
         if ("youdao".equals(provider)) return YoudaoTranslator.getInstance();
+        if ("deepl".equals(provider)) return DeepLTranslator.getInstance();
         return GoogleTranslator.getInstance();
     }
 }

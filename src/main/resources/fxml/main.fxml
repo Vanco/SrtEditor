@@ -139,17 +139,17 @@
                     </ImageView>
                 </graphic>
                 <items>
-                    <MenuItem text="Google Translate" id="google" onAction="#translate">
-                        <graphic>
-                            <ImageView fitWidth="24" fitHeight="24">
-                                <Image url="@../icons/google.png"/>
-                            </ImageView>
-                        </graphic>
-                    </MenuItem>
                     <MenuItem text="Bing Translate" id="bing" onAction="#translate">
                         <graphic>
                             <ImageView fitWidth="24" fitHeight="24">
                                 <Image url="@../icons/bing.png"/>
+                            </ImageView>
+                        </graphic>
+                    </MenuItem>
+                    <MenuItem text="DeepL Translate" id="deepl" onAction="#translate">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24">
+                                <Image url="@../icons/deepl.png"/>
                             </ImageView>
                         </graphic>
                     </MenuItem>
@@ -160,6 +160,13 @@
                             </ImageView>
                         </graphic>
                     </MenuItem>
+                    <MenuItem text="Google Translate" id="google" onAction="#translate">
+                    <graphic>
+                        <ImageView fitWidth="24" fitHeight="24">
+                            <Image url="@../icons/google.png"/>
+                        </ImageView>
+                    </graphic>
+                </MenuItem>
                 </items>
             </MenuButton>
             <ProgressBar fx:id="bar" disable="true" visible="false"/>
