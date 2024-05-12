@@ -135,7 +135,7 @@
             <MenuButton text="Translator" fx:id="mbTranslate" styleClass="tool-button">
                 <graphic>
                     <ImageView fitWidth="24" fitHeight="24">
-                        <Image url="@../icons/g_translate_24px_rounded.png"/>
+                        <Image url="@../icons/translator.png"/>
                     </ImageView>
                 </graphic>
                 <items>
