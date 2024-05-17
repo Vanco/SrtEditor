@@ -455,7 +455,7 @@ public class MainController {
         return new SrtRecord(
                 id,
                 "Left".equals(mergeConfig.getTime()) ? lsr.getTime() : rsr.getTime(),
-                "Both".equals(mergeConfig.getSub()) ? lsr.getSub() + rsr.getSub() : "Left".equals(mergeConfig.getSub()) ? lsr.getSub() : rsr.getSub()
+                "Both".equals(mergeConfig.getSub()) ? lsr.getSub().replace('\n', ' ') +"\n" + rsr.getSub().replace('\n',' ') : "Left".equals(mergeConfig.getSub()) ? lsr.getSub() : rsr.getSub()
         );
     }
 
