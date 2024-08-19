@@ -22,6 +22,22 @@ public class TextUtil {
         return sb.toString();
     }
 
+    public static String autoLine(String sub) {
+        StringBuilder sb = new StringBuilder(sub);
+        if (sb.length() > 30 && sb.indexOf(LINE_BREAK) == -1) {
+            if (sb.length() > 60) {
+                int pos = sb.length() / 26;
+                for (int i = 1; i <= pos; i++) {
+                     sb.insert((i * 26), LINE_BREAK);
+                }
+            } else {
+                int half = sb.length() / 2;
+                sb.insert(half, LINE_BREAK);
+            }
+        }
+        return sb.toString();
+    }
+
     private static String strip(String sub) {
         return stripObj(stripXml(sub.trim()));
     }

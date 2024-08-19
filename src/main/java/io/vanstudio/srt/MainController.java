@@ -300,7 +300,7 @@ public class MainController {
 //                        e.printStackTrace();
                         toSub = srtRecord.getSub();
                     }
-                    to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), toSub), srtRecord.getId());
+                    to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(toSub)), srtRecord.getId());
 
                     updateProgress(++idx, max);
 
