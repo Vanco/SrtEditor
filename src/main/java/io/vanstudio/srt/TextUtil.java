@@ -10,13 +10,13 @@ public class TextUtil {
         String[] split = sub.split(LINE_BREAK);
         for (String line : split) {
             if (line.trim().startsWith(CONV_START)) {
-                sb.append(line).append(LINE_BREAK);
+                if (!sb.isEmpty()) sb.append(LINE_BREAK);
+                sb.append(line);
             } else {
-                sb.append(line).append(SP);
+                if (!sb.isEmpty()) sb.append(SP);
+                sb.append(line);
             }
         }
-        // remove last LINE_BREAK or SP
-        sb.deleteCharAt(sb.length() - 1);
 
         return sb.toString();
     }
