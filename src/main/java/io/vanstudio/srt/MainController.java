@@ -294,7 +294,7 @@ public class MainController {
 
                     String toSub;
                     try {
-                        toSub = g.translateText(srtRecord.getSub(), "auto", toLang);
+                        toSub = g.translateText(TextUtil.normalize(srtRecord.getSub()), "auto", toLang);
                     } catch (Exception e) {
                         log.appendText(e.getMessage() + "\n");
 //                        e.printStackTrace();
