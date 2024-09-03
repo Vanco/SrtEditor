@@ -276,36 +276,64 @@ public class MainController {
         mbTranslate.setDisable(false);
     }
 
-    private void translate(SrtTableController form, SrtTableController to, String toLang, Translator g) {
-        final int max = form.srtTable.getItems().size();
+    private void translate(SrtTableController from, SrtTableController to, String toLang, Translator g) {
+        final int max = from.srtTable.getItems().size();
         Task<Integer> task = new Task<>() {
             @Override
             protected Integer call() throws Exception {
                 int idx = 0;
-                // g.connect();
-//                Random random = new Random();
-                for (SrtRecord srtRecord : form.srtTable.getItems()) {
-                    if (isCancelled()) break;
 
-                    if (idx % 100 == 0) {
-                        g.close();
-                        g.connect();
+                if (g.isMultiTranslateSupported()) {
+                    int batch = 100;
+                    for (int i = 0; i * batch < max; i ++) {
+                        int fromIdx = i * batch;
+                        int toIdx = Math.min(i * batch + batch, max);
+                        List<SrtRecord> srtRecords = from.srtTable.getItems().subList(fromIdx, toIdx);
+
+                        List<String> list = srtRecords.stream().map(it -> TextUtil.normalize(it.getSub())).toList();
+
+                        List<String> translatedText;
+                        try {
+                            translatedText = g.translateText(list, "auto", toLang);
+                        } catch (Exception e) {
+                            log.appendText(e.getMessage() + "\n");
+                            translatedText = list;
+                        }
+
+                        for (int j = 0; j < srtRecords.size(); j++) {
+                            SrtRecord srtRecord = srtRecords.get(j);
+                            String text = translatedText.get(j);
+                            to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(text)), srtRecord.getId());
+                        }
+
+                        idx = toIdx;
+
+                        updateProgress(idx, max);
+
                     }
+                } else {
+                    for (SrtRecord srtRecord : from.srtTable.getItems()) {
+                        if (isCancelled()) break;
 
-                    String toSub;
-                    try {
-                        toSub = g.translateText(TextUtil.normalize(srtRecord.getSub()), "auto", toLang);
-                    } catch (Exception e) {
-                        log.appendText(e.getMessage() + "\n");
-//                        e.printStackTrace();
-                        toSub = srtRecord.getSub();
+                        if (idx % 100 == 0) {
+                            g.close();
+                            g.connect();
+                        }
+
+                        String toSub;
+                        try {
+                            toSub = g.translateText(TextUtil.normalize(srtRecord.getSub()), "auto", toLang);
+                        } catch (Exception e) {
+                            log.appendText(e.getMessage() + "\n");
+                            toSub = srtRecord.getSub();
+                        }
+                        to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(toSub)), srtRecord.getId());
+
+                        updateProgress(++idx, max);
+
                     }
-                    to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(toSub)), srtRecord.getId());
-
-                    updateProgress(++idx, max);
-
-//                    Thread.sleep(random.nextInt(500));
                 }
+
 
                 return idx;
             }
