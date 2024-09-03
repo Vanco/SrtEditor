@@ -282,10 +282,15 @@ public class MainController {
             @Override
             protected Integer call() throws Exception {
                 int idx = 0;
-
                 if (g.isMultiTranslateSupported()) {
+                    g.connect();
                     int batch = 100;
-                    for (int i = 0; i * batch < max; i ++) {
+                    for (int i = 0, exCount = 0; i * batch < max; i ++, exCount ++) {
+                        if (exCount == 8) {
+                            exCount = 0;
+                            g.close();
+                            g.connect();
+                        }
                         int fromIdx = i * batch;
                         int toIdx = Math.min(i * batch + batch, max);
                         List<SrtRecord> srtRecords = from.srtTable.getItems().subList(fromIdx, toIdx);

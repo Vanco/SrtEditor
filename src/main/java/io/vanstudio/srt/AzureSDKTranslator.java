@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class AzureSDKTranslator implements Translator{
     public static final String ENDPOINT = "https://api.cognitive.microsofttranslator.com";
-    private final TextTranslationClient client;
+    private TextTranslationClient client;
 
     private static AzureSDKTranslator _instance;
 
@@ -25,15 +25,6 @@ public class AzureSDKTranslator implements Translator{
     }
 
     public AzureSDKTranslator() {
-        String key = System.getenv("BING_TRANSLATOR_KEY");
-        String region = System.getenv("BING_TRANSLATOR_REGION");
-
-        AzureKeyCredential credential = new AzureKeyCredential(key);
-        client = new TextTranslationClientBuilder()
-                .credential(credential)
-                .region(region)
-                .endpoint(ENDPOINT)
-                .buildClient();
     }
 
     @Override
@@ -63,11 +54,19 @@ public class AzureSDKTranslator implements Translator{
 
     @Override
     public void connect() throws Exception {
+        String key = System.getenv("BING_TRANSLATOR_KEY");
+        String region = System.getenv("BING_TRANSLATOR_REGION");
 
+        AzureKeyCredential credential = new AzureKeyCredential(key);
+        client = new TextTranslationClientBuilder()
+                .credential(credential)
+                .region(region)
+                .endpoint(ENDPOINT)
+                .buildClient();
     }
 
     @Override
     public void close() throws IOException {
-
+        client = null;
     }
 }
