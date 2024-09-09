@@ -302,7 +302,17 @@ public class MainController {
                             translatedText = g.translateText(list, "auto", toLang);
                         } catch (Exception e) {
                             log.appendText(e.getMessage() + "\n");
-                            translatedText = list;
+                            // reconnect and try again.
+                            exCount = 0;
+                            g.close();
+                            g.connect();
+                            try {
+                                translatedText = g.translateText(list, "auto", toLang);
+                            } catch (Exception ex) {
+                                g.close();
+                                g.connect();
+                                translatedText = list;
+                            }
                         }
 
                         for (int j = 0; j < srtRecords.size(); j++) {
