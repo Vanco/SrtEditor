@@ -297,21 +297,17 @@ public class MainController {
 
                         List<String> list = srtRecords.stream().map(it -> TextUtil.normalize(it.getSub())).toList();
 
-                        List<String> translatedText;
-                        try {
-                            translatedText = g.translateText(list, "auto", toLang);
-                        } catch (Exception e) {
-                            log.appendText(e.getMessage() + "\n");
-                            // reconnect and try again.
-                            exCount = 0;
-                            g.close();
-                            g.connect();
+                        List<String> translatedText = list;
+                        for(int retryCount = 0; retryCount < 2; retryCount ++) {
                             try {
                                 translatedText = g.translateText(list, "auto", toLang);
-                            } catch (Exception ex) {
+                                break; // do not retry
+                            } catch (Exception e) {
+                                log.appendText(e.getMessage() + "\n");
+                                // reconnect and try again.
+                                exCount = 0;
                                 g.close();
                                 g.connect();
-                                translatedText = list;
                             }
                         }
 
