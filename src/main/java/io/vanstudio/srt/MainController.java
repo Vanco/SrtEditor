@@ -285,8 +285,8 @@ public class MainController {
                 if (g.isMultiTranslateSupported()) {
                     g.connect();
                     int batch = 100;
-                    for (int i = 0, exCount = 0; i * batch < max; i ++, exCount ++) {
-                        if (exCount == 8) {
+                    for (int i = 0, exCount = 0; i * batch < max; ) {
+                        if (exCount == 5) {
                             exCount = 0;
                             g.close();
                             g.connect();
@@ -298,17 +298,17 @@ public class MainController {
                         List<String> list = srtRecords.stream().map(it -> TextUtil.normalize(it.getSub())).toList();
 
                         List<String> translatedText = list;
-                        for(int retryCount = 0; retryCount < 2; retryCount ++) {
-                            try {
-                                translatedText = g.translateText(list, "auto", toLang);
-                                break; // do not retry
-                            } catch (Exception e) {
-                                log.appendText(e.getMessage() + "\n");
-                                // reconnect and try again.
-                                exCount = 0;
-                                g.close();
-                                g.connect();
-                            }
+                        try {
+                            translatedText = g.translateText(list, "auto", toLang);
+                        } catch (Exception e) {
+                            log.appendText(e.getMessage() + "\n");
+                            // reconnect and try again.
+                            Thread.sleep(1000);
+
+                            exCount = 0;
+                            g.close();
+                            g.connect();
+                            continue;
                         }
 
                         for (int j = 0; j < srtRecords.size(); j++) {
@@ -320,7 +320,9 @@ public class MainController {
                         idx = toIdx;
 
                         updateProgress(idx, max);
-
+                        Thread.sleep(100);
+                        i ++;
+                        exCount ++;
                     }
                 } else {
                     for (SrtRecord srtRecord : from.srtTable.getItems()) {
