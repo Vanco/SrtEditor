@@ -303,7 +303,7 @@ public class MainController {
                         } catch (Exception e) {
                             log.appendText(e.getMessage() + "\n");
                             // reconnect and try again.
-                            Thread.sleep(1000);
+                            Thread.sleep(10000);
 
                             exCount = 0;
                             g.close();
