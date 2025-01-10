@@ -43,7 +43,7 @@ public class AzureSDKTranslator implements Translator{
             List<TranslatedTextItem> translations = client.translate(text, new TranslateOptions().setTargetLanguages(List.of(targetLang)));
             return translations.stream().map(it -> it.getTranslations().stream().map(TranslationText::getText).collect(Collectors.joining())).toList();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new Exception(e);
         }
     }
 

@@ -56,6 +56,7 @@ jlink {
 
 dependencies {
     implementation("com.azure:azure-ai-translation-text:1.0.0")
+    implementation("io.netty:netty-common:4.1.115.Final")
     implementation("io.projectreactor.tools:blockhound:1.0.9.RELEASE")
     implementation("io.micrometer:context-propagation:1.1.1")
 
