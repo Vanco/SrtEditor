@@ -23,7 +23,9 @@ public class TextUtil {
     }
 
     public static String autoLine(String sub) {
-        StringBuilder sb = new StringBuilder(sub);
+        StringBuilder sb = new StringBuilder(
+                removeEvenOccurrences(sub)
+        );
         if (sb.length() > 30 && sb.indexOf(LINE_BREAK) == -1) {
             if (sb.length() > 60) {
                 int pos = sb.length() / 26;
@@ -48,5 +50,27 @@ public class TextUtil {
 
     private static String stripObj(String xml) {
         return xml.replaceAll("\\{[^}]+}", "");
+    }
+
+    /**
+     * 删除输入字符串中出现的第偶数个‘♪’字符
+     *
+     * @param input 输入的字符串
+     * @return 处理后的字符串
+     */
+    private static String removeEvenOccurrences(String input) {
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        for (char c : input.toCharArray()) {
+            if (c == '♪') {
+                count++;
+                if (count % 2 != 0) {
+                    result.append(c);
+                }
+            } else {
+                result.append(c);
+            }
+        }
+        return result.toString();
     }
 }
