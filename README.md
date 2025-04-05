@@ -10,3 +10,9 @@ A simple subtitle (srt) editor. See my [User Guide](docs/user_guide.md) for deta
 - edit subtitle.
 - edit time.
   
+### Build
+
+Package app.
+```shell
+gradle jpackage
+```
