@@ -212,7 +212,7 @@ public class MainController {
         result.ifPresent(mergeConfig -> {
 
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(resources.getString("dialog.filechooder.save.srt.file"));
+            fileChooser.setTitle(resources.getString("dialog.filechooser.save.srt.file"));
             fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("SRT", "*.srt"));
             File file = fileChooser.showSaveDialog(btnMerge.getScene().getWindow());
 

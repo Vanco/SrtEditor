@@ -11,6 +11,8 @@ SrtEditor is a sample subtitle(srt) file editor, merger. With the SrtEditor, you
 - [x] save the changes 
 - [x] merge two srt into new one by select your selection content, e.g. 
 select time from left, subtitle from right or combine both subtitles to make two language srt file
+- [x] auto normalize and clean empty line.
+- [x] auto calculate time base on first(or selected) line.
 
 But the following you can not do 
 
@@ -30,16 +32,25 @@ ones.
 So I create the SrtEditor tool to do the job for me.
 
 ### Main screen
-![Main Screen](images/main_screen_0.png)
+![Main Screen](images/main_screen.png)
 
 ### Load file
 SrtEditor try to load the file by guess it charset. Sometime the guess will fail, 
 it will open the file as iso-8859-1, or even worse fail open file. If this happened, 
 just choose the correct charset, and the file will open correctly.
 
+### Auto normalize
+Auto normalize and clean the empty line in each side. Just click `Auto normlize` button.
+
+### Adjust time
+When time not match in both side. you can click `calculate shift time` button to auto calculate times: 
+- base on first line's time on both side
+- base on select line's time on either side
+After calculation, you only need click ONE side's `Time Shift` button. This will adjust selected side's all times.
+
 ### Edit subtitle, time
 The subtitle, time are editable, but the # (serial number) is not allow to edit. 
-The serial number here is used for order purpose, the table will ordered only 
+The serial number here is used for order purpose, the table will order only 
 by the serial number ascending, not by the time. Just click a cell and edit, no any 
 validation is done here, so be careful, don't break the timeline.
 
@@ -77,8 +88,8 @@ Second, you need choose merge strategy.
 For my case, I choose the time from left side (English), subtitle from right side (duo lang, English and Chinese)
 the charset I choose other, GB18030. Next step, choose file name to save.
 
-Other use case is create duo lang subtitle, suppose you have two subtitle file with 
-different language, and match the size, you can easy create a duo lang subtitle by choose combine subtitle strategy.
+Other use case is create duo lang subtitle, suppose you have two subtitles file with 
+different language, and match the size, you can easily create a duo lang subtitle by choose combine subtitle strategy.
 
 ### Translate
 
@@ -90,3 +101,6 @@ set the following environment variable:
 export BING_TRANSLATOR_KEY=<your key string>
 export BING_TRANSLATOR_REGION=<your region>
 ```
+
+To view api error log, you can open log window at the bottom. Some time the api will block by server, just wait for while
+it will retry. you don't need to do anything.

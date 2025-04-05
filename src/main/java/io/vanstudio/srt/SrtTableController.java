@@ -131,7 +131,7 @@ public class SrtTableController {
         if (srtTable.getItems().isEmpty()) return;
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(resources.getString("dialog.filechooder.save.srt.file"));
+        fileChooser.setTitle(resources.getString("dialog.filechooser.save.srt.file"));
         if (path != null) {
             fileChooser.setInitialFileName(defaultFileName());
             fileChooser.setInitialDirectory(path.getParent().toFile());
