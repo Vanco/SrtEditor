@@ -6,8 +6,8 @@ package io.vanstudio.srt;
  */
 public final class Version {
     private static final int major = 1;
-    private static final int minor = 1;
-    private static final int reversion = 1;
+    private static final int minor = 2;
+    private static final int reversion = 0;
     public static String version() {
         return "" + major + "." + minor + (reversion > 0 ? "." + reversion: "");
     }

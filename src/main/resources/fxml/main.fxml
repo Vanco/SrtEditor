@@ -146,27 +146,27 @@
                             </ImageView>
                         </graphic>
                     </MenuItem>
-                    <MenuItem text="DeepL Translate" id="deepl" onAction="#translate">
+                    <MenuItem text="DeepL Translate" id="deepl" onAction="#translate" disable="true">
                         <graphic>
                             <ImageView fitWidth="24" fitHeight="24">
                                 <Image url="@../icons/deepl.png"/>
                             </ImageView>
                         </graphic>
                     </MenuItem>
-                    <MenuItem text="YaoDao Translate" id="youdao" onAction="#translate">
+                    <MenuItem text="YaoDao Translate" id="youdao" onAction="#translate" disable="true">
                         <graphic>
                             <ImageView fitWidth="24" fitHeight="24">
                                 <Image url="@../icons/logo_cidian@2x.png"/>
                             </ImageView>
                         </graphic>
                     </MenuItem>
-                    <MenuItem text="Google Translate" id="google" onAction="#translate">
-                    <graphic>
-                        <ImageView fitWidth="24" fitHeight="24">
-                            <Image url="@../icons/google.png"/>
-                        </ImageView>
-                    </graphic>
-                </MenuItem>
+                    <MenuItem text="Google Translate" id="google" onAction="#translate" disable="true">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24">
+                                <Image url="@../icons/google.png"/>
+                            </ImageView>
+                        </graphic>
+                    </MenuItem>
                 </items>
             </MenuButton>
             <ProgressBar fx:id="bar" disable="true" visible="false"/>
@@ -181,9 +181,14 @@
                 </graphic>
             </Button>
             <Pane HBox.hgrow="ALWAYS"/>
-            <ImageView onMouseClicked="#about">
-                <Image url="@../icons/help-32x32.png"/>
-            </ImageView>
+            <Button onAction="#about" styleClass="tool-button">
+                <graphic>
+                    <ImageView fitHeight="32" fitWidth="32">
+                        <Image url="@../icons/srte-48x48.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+
         </HBox>
     </top>
     <bottom>

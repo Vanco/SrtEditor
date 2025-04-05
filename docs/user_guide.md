@@ -16,7 +16,7 @@ But the following you can not do
 
 - [ ] add row 
 
-## My Story
+#### My Story
 Before introduce the SrtEditor, I'd like to tell a story about why I create SrtEditor.
 
 Once I have a movie copy, it a nice movie, but in English and no subtitle. I have
@@ -79,3 +79,14 @@ the charset I choose other, GB18030. Next step, choose file name to save.
 
 Other use case is create duo lang subtitle, suppose you have two subtitle file with 
 different language, and match the size, you can easy create a duo lang subtitle by choose combine subtitle strategy.
+
+### Translate
+
+Before you can use translate function, you need config the API information.
+The translation engine is Microsoft Azure translation service.
+set the following environment variable:
+```shell
+# endpoint url: https://api.cognitive.microsofttranslator.com
+export BING_TRANSLATOR_KEY=<your key string>
+export BING_TRANSLATOR_REGION=<your region>
+```

@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
  * &copy; fanhuagang@gmail.com
  * Created by van on 23/10/2016.
  */
+// This is a test only class
 public class SrtMain {
     public static void main(String[] args) {
         try {
