@@ -96,6 +96,19 @@
                         </ImageView>
                     </graphic>
                 </Button>
+                <Button onAction="#mergeLeft" focusTraversable="false" styleClass="tool-button">
+                    <padding>
+                        <Insets bottom="2" left="2" right="2" top="2"/>
+                    </padding>
+                    <tooltip>
+                        <Tooltip text="%button.merge.left.tip"/>
+                    </tooltip>
+                    <graphic>
+                        <ImageView fitHeight="24" fitWidth="24">
+                            <Image url="@../icons/double-left.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
                 <Pane VBox.vgrow="ALWAYS"/>
                 <ToggleButton onAction="#showLog" focusTraversable="false" styleClass="tool-button">
                     <padding>

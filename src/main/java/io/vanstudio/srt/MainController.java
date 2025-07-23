@@ -537,4 +537,21 @@ public class MainController {
             rightSrtController.magic();
         }
     }
+
+    public void mergeLeft(ActionEvent actionEvent) {
+        // validate
+        if (leftSrtController.srtTable.getItems().isEmpty() || rightSrtController.srtTable.getItems().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setHeaderText(resources.getString("dialog.merge.header.could.not.merge"));
+            alert.setContentText(resources.getString("dialog.merge.info.can.not.merge.empty"));
+            alert.show();
+            return;
+        }
+
+        // merge right to left
+        ObservableList<SrtRecord> right = rightSrtController.srtTable.getItems();
+        for (SrtRecord srtRecord : right) {
+            leftSrtController.insertItem(srtRecord);
+        }
+    }
 }

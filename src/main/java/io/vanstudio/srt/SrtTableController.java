@@ -14,10 +14,7 @@ import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.SortedMap;
+import java.util.*;
 
 public class SrtTableController {
     public TableView<SrtRecord> srtTable;
@@ -267,12 +264,14 @@ public class SrtTableController {
                 SrtRecord two = items.get(i + 1);
 
                 if (two.getSub().isEmpty()) {
-                    SrtTime twoTime = new SrtTime(two.getTime());
-                    SrtTime oneTime = new SrtTime(one.getTime());
+                    if (!two.getTime().isEmpty()) {
+                        SrtTime twoTime = new SrtTime(two.getTime());
+                        SrtTime oneTime = new SrtTime(one.getTime());
 
-                    SrtTime srtTime = new SrtTime(oneTime.getStart(), twoTime.getEnd() - oneTime.getStart());
+                        SrtTime srtTime = new SrtTime(oneTime.getStart(), twoTime.getEnd() - oneTime.getStart());
 
-                    one.setTime(srtTime.getSrtTime());
+                        one.setTime(srtTime.getSrtTime());
+                    }
                 }
             }
         }
@@ -280,6 +279,23 @@ public class SrtTableController {
         // remove empty sub
         FilteredList<SrtRecord> emptySubs = items.filtered(srtRecord -> srtRecord.getSub().isEmpty());
         masterData.removeAll(emptySubs);
+        adjustId();
+    }
+
+    public void insertItem(SrtRecord srtRecord) {
+        if (srtRecord == null) {
+            return;
+        }
+        Optional<SrtRecord> indexOpt = srtTable.getItems()
+                .stream()
+                .filter(it -> new SrtTime(it.getTime()).getStart() > new SrtTime(srtRecord.getTime()).getStart())
+                .findFirst();
+        if (indexOpt.isEmpty()) {
+            // if no record found, add to the end
+            masterData.add(new SrtRecord(masterData.size()+0.1f, srtRecord.getTime(), srtRecord.getSub()));
+        } else {
+            masterData.add(new SrtRecord(indexOpt.get().getId()-0.1f, srtRecord.getTime(), srtRecord.getSub()));
+        }
         adjustId();
     }
 }
