@@ -1,7 +1,7 @@
 buildscript {
     repositories {
-        maven("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
-        maven("https://maven.aliyun.com/repository/gradle-plugin")
+        maven("https://mirrors.huaweicloud.com/repository/maven/")
+        gradlePluginPortal()
     }
 }
 
@@ -10,16 +10,15 @@ plugins {
     id("application")
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("org.javamodularity.moduleplugin") version "1.8.15"
-    id("org.beryx.jlink") version "3.0.1"
+    id("org.beryx.jlink") version "3.1.3"
 }
 
 group = "io.vanstudio"
 version = "1.1.2"
 
 repositories {
-    maven("https://mirrors.cloud.tencent.com/nexus/repository/maven-public/")
+    maven("https://mirrors.huaweicloud.com/repository/maven/")
     mavenCentral()
-    maven("https://maven.aliyun.com/repository/gradle-plugin")
 }
 
 tasks.withType(JavaCompile::class.java).configureEach {
@@ -55,8 +54,12 @@ jlink {
 }
 
 dependencies {
-    implementation("com.azure:azure-ai-translation-text:1.0.0")
-    implementation("io.netty:netty-common:4.1.115.Final")
+    implementation("com.azure:azure-ai-translation-text:1.1.5") {
+        // sine 2.0.66.Final, the Automatic-Module-Name is not set correctly in MANIFEST.MF
+        exclude(group = "io.netty", module = "netty-tcnative-boringssl-static")
+    }
+//    implementation(platform("io.netty:netty-parent:4.1.127.Final"))
+    implementation("io.netty:netty-tcnative-boringssl-static:2.0.61.Final")
     implementation("io.projectreactor.tools:blockhound:1.0.9.RELEASE")
     implementation("io.micrometer:context-propagation:1.1.1")
 
