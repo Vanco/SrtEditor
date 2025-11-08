@@ -13,6 +13,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        EnvironmentDiagnostics.logEnvironment();
+
         ResourceBundle resources = ResourceBundle.getBundle("bundles.Messages");
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/main.fxml")), resources);
         primaryStage.setTitle(resources.getString("app.window.title"));

@@ -276,7 +276,7 @@ public class MainController {
         mbTranslate.setDisable(false);
     }
 
-    private void translate(SrtTableController from, SrtTableController to, String toLang, Translator g) {
+    private void translate(SrtTableController from, SrtTableController to, String toLang, Translator g) throws IOException {
         final int max = from.srtTable.getItems().size();
         Task<Integer> task = new Task<>() {
             @Override
