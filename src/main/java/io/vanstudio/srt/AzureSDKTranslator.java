@@ -54,8 +54,8 @@ public class AzureSDKTranslator implements Translator{
 
     @Override
     public void connect() throws Exception {
-        String key = System.getenv("BING_TRANSLATOR_KEY");
-        String region = System.getenv("BING_TRANSLATOR_REGION");
+        String key = Config.getTranslatorKey();
+        String region = Config.getTranslatorRegion();
 
         AzureKeyCredential credential = new AzureKeyCredential(key);
         client = new TextTranslationClientBuilder()
