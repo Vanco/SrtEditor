@@ -9,7 +9,7 @@ plugins {
     id("java")
     id("application")
     id("org.openjfx.javafxplugin") version "0.1.0"
-    id("org.javamodularity.moduleplugin") version "1.8.15"
+    id("org.javamodularity.moduleplugin") version "2.0.0"
     id("org.beryx.jlink") version "3.1.3"
 }
 
@@ -38,35 +38,63 @@ java {
 }
 
 javafx {
-    version = "21"
-    modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics")
+    version = "23.0.1"
+    modules = listOf("javafx.controls", "javafx.fxml", "javafx.graphics", "javafx.base")
 }
 
 jlink {
-    options = listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages", "--ignore-signing-information")
-    launcher{
-        name = "SrtEdit"
-        jvmArgs = listOf(/*"-Dlog4j.configurationFile=./log4j2.xml",*/"-Djava.locale.providers=HOST,CLDR,COMPAT")
+    addOptions(
+        "--strip-debug",
+        "--compress=zip-6",
+        "--no-header-files",
+        "--no-man-pages",
+        "--ignore-signing-information"
+    )
+    launcher {
+        name = "SrtEditor"
+        jvmArgs = listOf(
+            "-Dorg.slf4j.simpleLogger.logFile=System.out",
+            "-Djava.util.logging.config.file=./logging.properties",
+            "-Djava.locale.providers=HOST,CLDR,COMPAT",
+            "-Dorg.slf4j.simpleLogger.defaultLogLevel=debug",
+            "-Dreactor.netty.native=false",
+        )
     }
+
+    val os = org.gradle.internal.os.OperatingSystem.current()
     jpackage {
         icon = "src/main/resources/icons/srte.icns"
+
+        // 正确的 jpackage 参数配置
+        if (os.isMacOsX) {
+            // macOS 特定的配置
+            imageOptions = listOf(
+                "--verbose",
+                "--resource-dir", "src/main/resources"
+            )
+            appVersion = version.toString()
+            vendor = "VanStudio"
+            description = "Simple Srt Subtitle editor"
+        }
     }
+
+    addExtraDependencies("javafx")
+
+    forceMerge(
+        "netty-tcnative",
+        "slf4j"
+    )
+
+    jarExclude("netty", "**/license/")
 }
 
 dependencies {
-    implementation("com.azure:azure-ai-translation-text:1.1.5") {
-        // sine 2.0.66.Final, the Automatic-Module-Name is not set correctly in MANIFEST.MF
-        exclude(group = "io.netty", module = "netty-tcnative-boringssl-static")
-    }
-//    implementation(platform("io.netty:netty-parent:4.1.127.Final"))
-    implementation("io.netty:netty-tcnative-boringssl-static:2.0.61.Final")
-    implementation("io.projectreactor.tools:blockhound:1.0.9.RELEASE")
-    implementation("io.micrometer:context-propagation:1.1.1")
-
-//    testImplementation("org.testfx:testfx-core:4.0.18")
-//    testImplementation("org.testfx:testfx-junit:4.0.18")
-//    testImplementation("junit:junit:4.13.1")
+    implementation("com.azure:azure-ai-translation-text:1.1.7")
+    implementation("io.projectreactor.tools:blockhound:1.0.15.RELEASE")
+    implementation("io.micrometer:context-propagation:1.1.3")
+    implementation("org.slf4j:slf4j-simple:2.0.17")
 }
+
 
 
 
