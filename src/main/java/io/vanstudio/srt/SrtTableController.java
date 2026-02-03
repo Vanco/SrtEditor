@@ -258,6 +258,9 @@ public class SrtTableController {
     public void magic() {
         ObservableList<SrtRecord> items = srtTable.getItems();
         // join empty sub time to previous line.
+        // join two sub into one when time is the same
+        List<SrtRecord> removed = new ArrayList<>();
+
         for (int i = 0; i < items.size() -1 ; i++) {
             SrtRecord one = items.get(i);
             if (i + 1 < items.size()) {
@@ -272,13 +275,23 @@ public class SrtTableController {
 
                         one.setTime(srtTime.getSrtTime());
                     }
+                    removed.add(two);
+                } else {
+                    if (!two.getTime().isEmpty()) {
+                        SrtTime twoTime = new SrtTime(two.getTime());
+                        SrtTime oneTime = new SrtTime(one.getTime());
+                        if (twoTime.equals(oneTime)) {
+                            one.setSub(one.getSub() + two.getSub());
+                            removed.add(two);
+                        }
+                    }
                 }
             }
         }
 
         // remove empty sub
-        FilteredList<SrtRecord> emptySubs = items.filtered(srtRecord -> srtRecord.getSub().isEmpty());
-        masterData.removeAll(emptySubs);
+        //FilteredList<SrtRecord> emptySubs = items.filtered(srtRecord -> srtRecord.getSub().isEmpty());
+        masterData.removeAll(removed);
         adjustId();
     }
 

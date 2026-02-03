@@ -107,7 +107,9 @@ public class SrtTime {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SrtTime srtTime = (SrtTime) o;
-        return Objects.equals(start, srtTime.start) && Objects.equals(end, srtTime.end) && Objects.equals(duration, srtTime.duration);
+        return Objects.equals(start.getValue(), srtTime.start.getValue())
+                && Objects.equals(end.getValue(), srtTime.end.getValue())
+                && Objects.equals(duration.getValue(), srtTime.duration.getValue());
     }
 
     @Override

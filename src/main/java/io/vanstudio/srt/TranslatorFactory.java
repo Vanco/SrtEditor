@@ -8,4 +8,8 @@ public class TranslatorFactory {
         if ("deepl".equals(provider)) return AzureSDKTranslator.getInstance(); // DeepLTranslator.getInstance();
         return AzureSDKTranslator.getInstance();
     }
+
+    public static Translator getInstance() {
+        return AzureSDKTranslator.getInstance();
+    }
 }

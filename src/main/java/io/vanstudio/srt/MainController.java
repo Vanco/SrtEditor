@@ -42,7 +42,8 @@ public class MainController {
     public TextArea log;
     public Button btnProject;
     public ChoiceBox<String> cbxLanguage;
-    public MenuButton mbTranslate;
+    //    public MenuButton mbTranslate;
+    public Button mbTranslate;
     public Button btnSyncTime;
     public Button btnCancel;
 
@@ -257,9 +258,9 @@ public class MainController {
 
         mbTranslate.setDisable(true);
 
-        MenuItem source = (MenuItem) event.getSource();
+//        MenuItem source = (MenuItem) event.getSource();
 
-        try (Translator g = TranslatorFactory.getInstance(source.getId())) {
+        try (Translator g = TranslatorFactory.getInstance()) {
 
             String toLang = getCode(cbxLanguage.getValue());
             if (leftSrtController.srtTable.getItems().isEmpty()) {
@@ -279,75 +280,278 @@ public class MainController {
     private void translate(SrtTableController from, SrtTableController to, String toLang, Translator g) throws IOException {
         final int max = from.srtTable.getItems().size();
         Task<Integer> task = new Task<>() {
+            //            @Override
+//            protected Integer call() throws Exception {
+//                int idx = 0;
+//                if (g.isMultiTranslateSupported()) {
+//                    g.connect();
+//                    int batch = 800;
+//                    for (int i = 0, exCount = 0; i * batch < max; ) {
+//                        if (exCount == 5) {
+//                            exCount = 0;
+//                            g.close();
+//                            g.connect();
+//                        }
+//                        int fromIdx = i * batch;
+//                        int toIdx = Math.min(i * batch + batch, max);
+//                        List<SrtRecord> srtRecords = from.srtTable.getItems().subList(fromIdx, toIdx);
+//
+//                        List<String> list = srtRecords.stream().map(it -> TextUtil.normalize(it.getSub())).toList();
+//
+//                        List<String> translatedText = list;
+//                        try {
+//                            translatedText = g.translateText(list, "auto", toLang);
+//                        } catch (Exception e) {
+//                            log.appendText(e.getMessage() + "\n");
+//                            // reconnect and try again.
+//                            Thread.sleep(10000);
+//
+//                            exCount = 0;
+//                            g.close();
+//                            g.connect();
+//                            continue;
+//                        }
+//
+//                        for (int j = 0; j < srtRecords.size(); j++) {
+//                            SrtRecord srtRecord = srtRecords.get(j);
+//                            String text = translatedText.get(j);
+//                            to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(text)), srtRecord.getId());
+//                        }
+//
+//                        idx = toIdx;
+//
+//                        updateProgress(idx, max);
+//                        Thread.sleep(100);
+//                        i ++;
+//                        exCount ++;
+//                    }
+//                } else {
+//                    for (SrtRecord srtRecord : from.srtTable.getItems()) {
+//                        if (isCancelled()) break;
+//
+//                        if (idx % 100 == 0) {
+//                            g.close();
+//                            g.connect();
+//                        }
+//
+//                        String toSub;
+//                        try {
+//                            toSub = g.translateText(TextUtil.normalize(srtRecord.getSub()), "auto", toLang);
+//                        } catch (Exception e) {
+//                            log.appendText(e.getMessage() + "\n");
+//                            toSub = srtRecord.getSub();
+//                        }
+//                        to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(toSub)), srtRecord.getId());
+//
+//                        updateProgress(++idx, max);
+//
+//                    }
+//                }
+//
+//
+//                return idx;
+//            }
             @Override
             protected Integer call() throws Exception {
                 int idx = 0;
                 if (g.isMultiTranslateSupported()) {
                     g.connect();
-                    int batch = 100;
-                    for (int i = 0, exCount = 0; i * batch < max; ) {
-                        if (exCount == 5) {
-                            exCount = 0;
-                            g.close();
-                            g.connect();
+
+                    // 使用较大的批次大小，但增加延迟
+                    int batch = 200; // 使用较大的批次，但通过延迟控制频率
+                    int baseDelay = 2000; // 基础延迟2秒
+                    int maxRetries = 3; // 最大重试次数
+                    int interBatchDelay = 1000; // 批次间延迟5秒
+
+                    // 字符数限制
+                    final int MAX_CHARS_PER_BATCH = 50000; // 每批次最多50000字符
+
+                    int requestCountInMinute = 0;
+                    long minuteStartTime = System.currentTimeMillis();
+
+                    // 修复：使用单独的索引变量，不依赖i*batch计算
+                    int currentIndex = 0;
+                    int batchNumber = 0;
+
+                    while (currentIndex < max) {
+                        if (isCancelled()) break;
+                        batchNumber++;
+
+                        // 检查每分钟请求限制
+                        long currentTime = System.currentTimeMillis();
+                        if (currentTime - minuteStartTime >= 60000) {
+                            requestCountInMinute = 0;
+                            minuteStartTime = currentTime;
                         }
-                        int fromIdx = i * batch;
-                        int toIdx = Math.min(i * batch + batch, max);
+
+                        if (requestCountInMinute >= 10) { // 保守限制，每分钟最多8个批次
+                            long waitTime = 60000 - (currentTime - minuteStartTime) + 2000; // 额外加2秒缓冲
+                            log.appendText("达到每分钟请求限制，等待 " + (waitTime/1000) + " 秒...\n");
+                            Thread.sleep(waitTime);
+                            requestCountInMinute = 0;
+                            minuteStartTime = System.currentTimeMillis();
+                        }
+
+                        // 动态调整批次大小基于字符数
+                        int actualBatch = 0;
+                        int currentBatchChars = 0;
+                        for (int k = currentIndex; k < max && actualBatch < batch; k++) {
+                            String text = TextUtil.normalize(from.srtTable.getItems().get(k).getSub());
+                            if (currentBatchChars + text.length() > MAX_CHARS_PER_BATCH) {
+                                break;
+                            }
+                            currentBatchChars += text.length();
+                            actualBatch++;
+                        }
+
+                        if (actualBatch == 0) actualBatch = 1; // 确保至少处理一条
+
+                        int fromIdx = currentIndex;
+                        int toIdx = currentIndex + actualBatch;
                         List<SrtRecord> srtRecords = from.srtTable.getItems().subList(fromIdx, toIdx);
 
-                        List<String> list = srtRecords.stream().map(it -> TextUtil.normalize(it.getSub())).toList();
+                        List<String> list = srtRecords.stream()
+                                .map(it -> TextUtil.normalize(it.getSub()))
+                                .toList();
 
-                        List<String> translatedText = list;
-                        try {
-                            translatedText = g.translateText(list, "auto", toLang);
-                        } catch (Exception e) {
-                            log.appendText(e.getMessage() + "\n");
-                            // reconnect and try again.
-                            Thread.sleep(10000);
+                        List<String> translatedText = null;
+                        boolean success = false;
+                        int retryCount = 0;
 
-                            exCount = 0;
-                            g.close();
-                            g.connect();
-                            continue;
+                        // 重试逻辑
+                        while (retryCount < maxRetries && !success) {
+                            try {
+                                translatedText = g.translateText(list, "auto", toLang);
+                                success = true;
+                                requestCountInMinute++; // 成功请求计数
+
+                            } catch (Exception e) {
+                                retryCount++;
+
+                                if (e.getMessage().contains("429")) {
+                                    // 对于429错误，采用更激进的等待策略
+                                    int waitTime;
+                                    if (retryCount == 1) {
+                                        waitTime = 10000; // 第一次遇到429等待10秒
+                                    } else if (retryCount == 2) {
+                                        waitTime = 30000; // 第二次等待30秒
+                                    } else {
+                                        waitTime = 60000; // 第三次等待60秒
+                                    }
+
+                                    log.appendText("遇到请求限制错误(429)，第 " + retryCount + " 次重试，等待 " + (waitTime/1000) + " 秒\n");
+                                    Thread.sleep(waitTime);
+
+                                    // 重新连接
+                                    g.close();
+                                    Thread.sleep(2000);
+                                    g.connect();
+
+                                } else {
+                                    // 其他错误使用标准指数退避
+                                    int waitTime = baseDelay * (1 << retryCount);
+                                    log.appendText("翻译批次 " + batchNumber + " 失败，第 " + retryCount + " 次重试，等待 " + waitTime + " 毫秒\n");
+                                    Thread.sleep(waitTime);
+                                }
+
+                                if (retryCount >= maxRetries) {
+                                    log.appendText("重试 " + maxRetries + " 次后仍然失败，跳过当前批次\n");
+                                    // 使用原文作为后备方案
+                                    translatedText = list;
+                                    break;
+                                }
+                            }
                         }
 
+                        // 处理翻译结果 - 确保每条记录都被处理
                         for (int j = 0; j < srtRecords.size(); j++) {
                             SrtRecord srtRecord = srtRecords.get(j);
-                            String text = translatedText.get(j);
+                            String text = translatedText != null ? translatedText.get(j) : srtRecord.getSub();
                             to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(text)), srtRecord.getId());
                         }
 
-                        idx = toIdx;
-
+                        // 修复：正确更新当前索引
+                        currentIndex += actualBatch;
+                        idx = currentIndex;
                         updateProgress(idx, max);
-                        Thread.sleep(100);
-                        i ++;
-                        exCount ++;
+
+                        // 批次间延迟
+                        if (currentIndex < max) {
+                            // 根据已处理记录数动态增加延迟
+                            int dynamicDelay = interBatchDelay;
+//                            if (idx > 1000) {
+//                                dynamicDelay = 10000; // 超过1000条后等待10秒
+//                            } else if (idx > 500) {
+//                                dynamicDelay = 7000; // 超过500条后等待7秒
+//                            }
+
+                            log.appendText("批次 " + batchNumber + " 完成 (" + actualBatch + "条)，已处理 " + idx + "/" + max + "，等待 " + (dynamicDelay/1000) + " 秒\n");
+                            Thread.sleep(dynamicDelay);
+                        }
                     }
                 } else {
+                    // 单条翻译的优化
+                    int delayBetweenRequests = 2000; // 每条请求间隔2秒
+                    int requestCount = 0;
+                    int consecutive429Errors = 0;
+                    long minuteStartTime = System.currentTimeMillis();
+                    int requestsThisMinute = 0;
+
                     for (SrtRecord srtRecord : from.srtTable.getItems()) {
                         if (isCancelled()) break;
 
-                        if (idx % 100 == 0) {
+                        // 检查每分钟请求限制
+                        long currentTime = System.currentTimeMillis();
+                        if (currentTime - minuteStartTime >= 60000) {
+                            requestsThisMinute = 0;
+                            minuteStartTime = currentTime;
+                        }
+
+                        if (requestsThisMinute >= 25) { // 每分钟最多25条单条请求
+                            long waitTime = 60000 - (currentTime - minuteStartTime) + 1000;
+                            log.appendText("达到每分钟单条请求限制，等待 " + (waitTime/1000) + " 秒\n");
+                            Thread.sleep(waitTime);
+                            requestsThisMinute = 0;
+                            minuteStartTime = System.currentTimeMillis();
+                        }
+
+                        if (requestCount % 20 == 0) {
                             g.close();
+                            Thread.sleep(2000);
                             g.connect();
                         }
 
                         String toSub;
                         try {
                             toSub = g.translateText(TextUtil.normalize(srtRecord.getSub()), "auto", toLang);
+                            consecutive429Errors = 0;
+                            requestsThisMinute++;
                         } catch (Exception e) {
-                            log.appendText(e.getMessage() + "\n");
+                            if (e.getMessage().contains("429")) {
+                                consecutive429Errors++;
+                                int waitTime = Math.min(consecutive429Errors * 15000, 120000); // 最多等待2分钟
+                                log.appendText("遇到限制错误，等待 " + (waitTime/1000) + " 秒 (连续第 " + consecutive429Errors + " 次)\n");
+                                Thread.sleep(waitTime);
+                                g.close();
+                                Thread.sleep(3000);
+                                g.connect();
+                            }
+                            log.appendText("翻译单条记录失败: " + e.getMessage() + "，使用原文\n");
                             toSub = srtRecord.getSub();
                         }
+
                         to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(toSub)), srtRecord.getId());
-
                         updateProgress(++idx, max);
+                        requestCount++;
 
+                        // 单条请求间延迟
+                        if (idx < max) {
+                            Thread.sleep(delayBetweenRequests);
+                        }
                     }
                 }
 
-
+                log.appendText("翻译完成！总计处理 " + idx + " 条记录\n");
                 return idx;
             }
         };
@@ -496,7 +700,7 @@ public class MainController {
         return new SrtRecord(
                 id,
                 "Left".equals(mergeConfig.getTime()) ? lsr.getTime() : rsr.getTime(),
-                "Both".equals(mergeConfig.getSub()) ? lsr.getSub().replace('\n', ' ') +"\n" + rsr.getSub().replace('\n',' ') : "Left".equals(mergeConfig.getSub()) ? lsr.getSub() : rsr.getSub()
+                "Both".equals(mergeConfig.getSub()) ? lsr.getSub().replace('\n', ' ') + "\n" + rsr.getSub().replace('\n', ' ') : "Left".equals(mergeConfig.getSub()) ? lsr.getSub() : rsr.getSub()
         );
     }
 
@@ -515,7 +719,7 @@ public class MainController {
 
     private long getShiftTime() {
         SrtRecord srtRecordLeft = Objects.requireNonNullElse(leftSrtController.getSelectedItem(), leftSrtController.srtTable.getItems().getFirst());
-        SrtRecord srtRecordRight = Objects.requireNonNullElse(rightSrtController.getSelectedItem() ,rightSrtController.srtTable.getItems().getFirst());
+        SrtRecord srtRecordRight = Objects.requireNonNullElse(rightSrtController.getSelectedItem(), rightSrtController.srtTable.getItems().getFirst());
 
         SrtTime srtTimeLeft = new SrtTime(srtRecordLeft.getTime());
         SrtTime srtTimeRight = new SrtTime(srtRecordRight.getTime());
