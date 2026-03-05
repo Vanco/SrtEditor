@@ -42,17 +42,21 @@ public class SrtTableController {
         }
 
         srtTable.setEditable(true);
-        SortedList<SrtRecord> sortedData = new SortedList<SrtRecord>(masterData);
-
-        sortedData.setComparator((o1, o2) -> Float.compare(o1.getId(), o2.getId()));
-
-        srtTable.setItems(sortedData);
+        resetData();
 
         timeShift.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("(?<=\\s|^)\\d+(?=\\s|$)")) {
                 timeShift.setText(newValue.replaceAll("[^\\-0-9]*", ""));
             }
         });
+    }
+
+    private void resetData() {
+        SortedList<SrtRecord> sortedData = new SortedList<SrtRecord>(masterData);
+
+        sortedData.setComparator((o1, o2) -> Float.compare(o1.getId(), o2.getId()));
+
+        srtTable.setItems(sortedData);
     }
 
     public void openSrtFile() {
@@ -293,6 +297,13 @@ public class SrtTableController {
         //FilteredList<SrtRecord> emptySubs = items.filtered(srtRecord -> srtRecord.getSub().isEmpty());
         masterData.removeAll(removed);
         adjustId();
+
+        // sort by start time.
+        masterData.sort(Comparator.comparing(r -> new SrtTime(r.getTime()).getStart()));
+        for (int i = 0; i < masterData.size(); i++) {
+            masterData.get(i).setId(i + 1);
+        }
+        resetData();
     }
 
     public void insertItem(SrtRecord srtRecord) {
