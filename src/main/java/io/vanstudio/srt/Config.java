@@ -72,4 +72,28 @@ public class Config {
         }
         return properties.getProperty("bing.translator.region");
     }
+
+    public static String getLLMBaseUrl() {
+        String url = System.getenv("LLM_BASE_URL");
+        if (url != null && !url.trim().isEmpty()) {
+            return url;
+        }
+        return properties.getProperty("llm.base.url", "http://localhost:8000/v1");
+    }
+
+    public static String getLLMModelName() {
+        String model = System.getenv("LLM_MODEL_NAME");
+        if (model != null && !model.trim().isEmpty()) {
+            return model;
+        }
+        return properties.getProperty("llm.model.name", "default");
+    }
+
+    public static String getLLMApiKey() {
+        String key = System.getenv("LLM_API_KEY");
+        if (key != null && !key.trim().isEmpty()) {
+            return key;
+        }
+        return properties.getProperty("llm.api.key", "no-key");
+    }
 }
