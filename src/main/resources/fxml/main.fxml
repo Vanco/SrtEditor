@@ -145,6 +145,7 @@
             </Button>
             <Separator orientation="VERTICAL"/>
             <ChoiceBox fx:id="cbxLanguage" maxHeight="32" styleClass="tool-button"/>
+            <ChoiceBox fx:id="cbxProvider" maxHeight="32" styleClass="tool-button" maxWidth="120"/>
 <!--            <MenuButton text="Translator" fx:id="mbTranslate" styleClass="tool-button">-->
 <!--                <graphic>-->
 <!--                    <ImageView fitWidth="24" fitHeight="24">-->

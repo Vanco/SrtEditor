@@ -42,6 +42,7 @@ public class MainController {
     public TextArea log;
     public Button btnProject;
     public ChoiceBox<String> cbxLanguage;
+    public ChoiceBox<String> cbxProvider;
     //    public MenuButton mbTranslate;
     public Button mbTranslate;
     public Button btnSyncTime;
@@ -59,6 +60,9 @@ public class MainController {
 
         cbxLanguage.setItems(FXCollections.observableArrayList(Languages.defaultLanguages()));
         cbxLanguage.setValue("Chinese Simplified");
+
+        cbxProvider.setItems(FXCollections.observableArrayList("Azure", "LLM"));
+        cbxProvider.setValue("Azure");
         // An AnimationTimer, whose handle(...) method will be invoked once
         // on each frame pulse (i.e. each rendering of the scene graph)
         AnimationTimer timer = new AnimationTimer() {
@@ -260,7 +264,7 @@ public class MainController {
 
 //        MenuItem source = (MenuItem) event.getSource();
 
-        try (Translator g = TranslatorFactory.getInstance()) {
+        try (Translator g = TranslatorFactory.getInstance(getSelectedProvider())) {
 
             String toLang = getCode(cbxLanguage.getValue());
             if (leftSrtController.srtTable.getItems().isEmpty()) {
@@ -386,7 +390,7 @@ public class MainController {
 
                         if (requestCountInMinute >= 10) { // 保守限制，每分钟最多8个批次
                             long waitTime = 60000 - (currentTime - minuteStartTime) + 2000; // 额外加2秒缓冲
-                            log.appendText("达到每分钟请求限制，等待 " + (waitTime/1000) + " 秒...\n");
+                            appendLog("达到每分钟请求限制，等待 " + (waitTime/1000) + " 秒...\n");
                             Thread.sleep(waitTime);
                             requestCountInMinute = 0;
                             minuteStartTime = System.currentTimeMillis();
@@ -427,8 +431,10 @@ public class MainController {
 
                             } catch (Exception e) {
                                 retryCount++;
+                                appendLog("异常类型: " + e.getClass().getSimpleName() + "\n");
+                                appendLog("异常信息: " + e.getMessage() + "\n");
 
-                                if (e.getMessage().contains("429")) {
+                                if (e.getMessage() != null && e.getMessage().contains("429")) {
                                     // 对于429错误，采用更激进的等待策略
                                     int waitTime;
                                     if (retryCount == 1) {
@@ -439,7 +445,7 @@ public class MainController {
                                         waitTime = 60000; // 第三次等待60秒
                                     }
 
-                                    log.appendText("遇到请求限制错误(429)，第 " + retryCount + " 次重试，等待 " + (waitTime/1000) + " 秒\n");
+                                    appendLog("遇到请求限制错误(429)，第 " + retryCount + " 次重试，等待 " + (waitTime/1000) + " 秒\n");
                                     Thread.sleep(waitTime);
 
                                     // 重新连接
@@ -450,12 +456,12 @@ public class MainController {
                                 } else {
                                     // 其他错误使用标准指数退避
                                     int waitTime = baseDelay * (1 << retryCount);
-                                    log.appendText("翻译批次 " + batchNumber + " 失败，第 " + retryCount + " 次重试，等待 " + waitTime + " 毫秒\n");
+                                    appendLog("翻译批次 " + batchNumber + " 失败，第 " + retryCount + " 次重试，等待 " + waitTime + " 毫秒\n");
                                     Thread.sleep(waitTime);
                                 }
 
                                 if (retryCount >= maxRetries) {
-                                    log.appendText("重试 " + maxRetries + " 次后仍然失败，跳过当前批次\n");
+                                    appendLog("重试 " + maxRetries + " 次后仍然失败，跳过当前批次\n");
                                     // 使用原文作为后备方案
                                     translatedText = list;
                                     break;
@@ -464,11 +470,19 @@ public class MainController {
                         }
 
                         // 处理翻译结果 - 确保每条记录都被处理
+                        List<SrtRecord> batchToAdd = new ArrayList<>();
                         for (int j = 0; j < srtRecords.size(); j++) {
                             SrtRecord srtRecord = srtRecords.get(j);
                             String text = translatedText != null ? translatedText.get(j) : srtRecord.getSub();
-                            to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(text)), srtRecord.getId());
+                            batchToAdd.add(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(text)));
                         }
+                        final List<SrtRecord> finalBatch = batchToAdd;
+                        javafx.application.Platform.runLater(() -> {
+                            for (SrtRecord record : finalBatch) {
+                                to.addMasterData(record);
+                            }
+                            to.refreshTable();
+                        });
 
                         // 修复：正确更新当前索引
                         currentIndex += actualBatch;
@@ -478,14 +492,9 @@ public class MainController {
                         // 批次间延迟
                         if (currentIndex < max) {
                             // 根据已处理记录数动态增加延迟
-                            int dynamicDelay = interBatchDelay;
-//                            if (idx > 1000) {
-//                                dynamicDelay = 10000; // 超过1000条后等待10秒
-//                            } else if (idx > 500) {
-//                                dynamicDelay = 7000; // 超过500条后等待7秒
-//                            }
+                            int dynamicDelay = (idx % 1000 == 0) ? 10000: interBatchDelay;
 
-                            log.appendText("批次 " + batchNumber + " 完成 (" + actualBatch + "条)，已处理 " + idx + "/" + max + "，等待 " + (dynamicDelay/1000) + " 秒\n");
+                            appendLog("批次 " + batchNumber + " 完成 (" + actualBatch + "条)，已处理 " + idx + "/" + max + "，等待 " + (dynamicDelay/1000) + " 秒\n");
                             Thread.sleep(dynamicDelay);
                         }
                     }
@@ -509,7 +518,7 @@ public class MainController {
 
                         if (requestsThisMinute >= 25) { // 每分钟最多25条单条请求
                             long waitTime = 60000 - (currentTime - minuteStartTime) + 1000;
-                            log.appendText("达到每分钟单条请求限制，等待 " + (waitTime/1000) + " 秒\n");
+                            appendLog("达到每分钟单条请求限制，等待 " + (waitTime/1000) + " 秒\n");
                             Thread.sleep(waitTime);
                             requestsThisMinute = 0;
                             minuteStartTime = System.currentTimeMillis();
@@ -527,20 +536,26 @@ public class MainController {
                             consecutive429Errors = 0;
                             requestsThisMinute++;
                         } catch (Exception e) {
-                            if (e.getMessage().contains("429")) {
+                            if (e.getMessage() != null && e.getMessage().contains("429")) {
                                 consecutive429Errors++;
                                 int waitTime = Math.min(consecutive429Errors * 15000, 120000); // 最多等待2分钟
-                                log.appendText("遇到限制错误，等待 " + (waitTime/1000) + " 秒 (连续第 " + consecutive429Errors + " 次)\n");
+                                final int c429 = consecutive429Errors;
+                                appendLog("遇到限制错误，等待 " + (waitTime/1000) + " 秒 (连续第 " + c429 + " 次)\n");
                                 Thread.sleep(waitTime);
                                 g.close();
                                 Thread.sleep(3000);
                                 g.connect();
                             }
-                            log.appendText("翻译单条记录失败: " + e.getMessage() + "，使用原文\n");
+                            final String errMsg = e.getMessage();
+                            appendLog("翻译单条记录失败: " + (errMsg != null ? errMsg : e.getClass().getSimpleName()) + "，使用原文\n");
                             toSub = srtRecord.getSub();
                         }
 
-                        to.addItem(new SrtRecord(srtRecord.getId(), srtRecord.getTime(), TextUtil.autoLine(toSub)), srtRecord.getId());
+                        final String finalToSub = toSub;
+                        final SrtRecord finalSrtRecord = srtRecord;
+                        javafx.application.Platform.runLater(() -> {
+                            to.addMasterData(new SrtRecord(finalSrtRecord.getId(), finalSrtRecord.getTime(), TextUtil.autoLine(finalToSub)));
+                        });
                         updateProgress(++idx, max);
                         requestCount++;
 
@@ -551,7 +566,8 @@ public class MainController {
                     }
                 }
 
-                log.appendText("翻译完成！总计处理 " + idx + " 条记录\n");
+                final int totalProcessed = idx;
+                appendLog("翻译完成！总计处理 " + totalProcessed + " 条记录\n");
                 return idx;
             }
         };
@@ -577,6 +593,13 @@ public class MainController {
                 bar.setVisible(false);
                 btnCancel.setDisable(true);
                 btnCancel.setVisible(false);
+            }
+        });
+
+        task.exceptionProperty().addListener((obs, oldExc, newExc) -> {
+            if (newExc != null) {
+                log.appendText("翻译错误: " + newExc.getMessage() + "\n");
+                newExc.printStackTrace();
             }
         });
 
@@ -731,6 +754,18 @@ public class MainController {
         ToggleButton source = (ToggleButton) event.getSource();
         log.setVisible(source.isSelected());
         log.setManaged(source.isSelected());
+    }
+
+    private String getSelectedProvider() {
+        String selected = cbxProvider.getValue();
+        if ("LLM (Local)".equals(selected)) {
+            return "llm";
+        }
+        return "azure";
+    }
+
+    private void appendLog(String msg) {
+        javafx.application.Platform.runLater(() -> log.appendText(msg));
     }
 
     public void magic() {
