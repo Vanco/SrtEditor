@@ -2,7 +2,6 @@ package io.vanstudio.srt;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -217,6 +216,14 @@ public class SrtTableController {
     public void addItem(SrtRecord srtRecord, float newId) {
         masterData.add(new SrtRecord(newId, srtRecord.getTime(), srtRecord.getSub()));
         adjustId();
+    }
+
+    public void addMasterData(SrtRecord srtRecord) {
+        masterData.add(srtRecord);
+    }
+
+    public void refreshTable() {
+        srtTable.refresh();
     }
 
     public void removeItem(SrtRecord srtRecord) {

@@ -20,6 +20,9 @@ module io.vanstudio.srt {
     requires io.netty.codec.http2;
     requires io.netty.tcnative.classes.openssl;
 
+    requires java.net.http;
+    requires jdk.crypto.ec;
+
     opens io.vanstudio.srt to javafx.fxml;
     exports io.vanstudio.srt;
 }

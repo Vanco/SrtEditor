@@ -90,12 +90,8 @@ jlink {
 }
 
 dependencies {
-    implementation("com.azure:azure-ai-translation-text:1.1.7")
+    implementation("com.azure:azure-ai-translation-text:2.0.1")
     implementation("io.projectreactor.tools:blockhound:1.0.15.RELEASE")
     implementation("io.micrometer:context-propagation:1.1.3")
     implementation("org.slf4j:slf4j-simple:2.0.17")
 }
-
-
-
-

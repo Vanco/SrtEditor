@@ -2,9 +2,7 @@ package io.vanstudio.srt;
 
 import com.azure.ai.translation.text.TextTranslationClient;
 import com.azure.ai.translation.text.TextTranslationClientBuilder;
-import com.azure.ai.translation.text.models.TranslateOptions;
-import com.azure.ai.translation.text.models.TranslatedTextItem;
-import com.azure.ai.translation.text.models.TranslationText;
+import com.azure.ai.translation.text.models.*;
 import com.azure.core.credential.AzureKeyCredential;
 
 import java.io.IOException;
@@ -30,7 +28,7 @@ public class AzureSDKTranslator implements Translator{
     @Override
     public String translateText(String text, String sourceLang, String targetLang) throws Exception {
         try {
-            TranslatedTextItem translate = client.translate(text, new TranslateOptions().setTargetLanguages(List.of(targetLang)));
+            TranslatedTextItem translate = client.translate(targetLang, text);
             return translate.getTranslations().stream().map(TranslationText::getText).collect(Collectors.joining());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -40,7 +38,8 @@ public class AzureSDKTranslator implements Translator{
     @Override
     public List<String> translateText(List<String> text, String sourceLang, String targetLang) throws Exception {
         try {
-            List<TranslatedTextItem> translations = client.translate(text, new TranslateOptions().setTargetLanguages(List.of(targetLang)));
+            List<TranslateInputItem> inputs = text.stream().map(s -> new TranslateInputItem(s, List.of(new TranslationTarget(targetLang)))).toList();
+            List<TranslatedTextItem> translations = client.translate(inputs);
             return translations.stream().map(it -> it.getTranslations().stream().map(TranslationText::getText).collect(Collectors.joining())).toList();
         } catch (Exception e) {
             throw new Exception(e);
